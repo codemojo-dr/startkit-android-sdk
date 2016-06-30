@@ -7,6 +7,6 @@
 /build
 /captures
 .idea/vcs.xml
-app/libs/
-app/src/test/java/io/codemojo/sample/
+sample/libs/
+sample/src/test/java/io/codemojo/sample/
 sdk/libs/
