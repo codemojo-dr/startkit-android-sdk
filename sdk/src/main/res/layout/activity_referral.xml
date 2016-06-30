@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_height="match_parent"
+    tools:context="io.codemojo.sdk.ui.ReferralActivity">
+
+    <RelativeLayout
+        android:id="@+id/relative"
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:background="#eaeaea"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <TextView
+            android:layout_marginBottom="-20dp"
+            android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
+            android:textSize="40sp" android:textStyle="bold"
+            android:id="@+id/lblReferralCode" android:padding="10dp"
+            android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:background="@drawable/dotted_border" android:text="-----" />
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:paddingBottom="@dimen/activity_vertical_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingTop="@dimen/activity_vertical_margin" android:layout_gravity="center" android:gravity="center"
+        android:orientation="vertical"
+        android:layout_weight="0.5"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:text="Please share the code" />
+
+        <Button
+            android:id="@+id/btnInvite"
+            android:text="Invite Friends"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>
