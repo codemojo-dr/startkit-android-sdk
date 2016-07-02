@@ -34,8 +34,8 @@ public class ReferralService extends BaseService {
      * @param callback
      */
     public void useSignupReferral(Context context, final ResponseAvailable callback){
-        SharedPreferences preferences = context.getSharedPreferences("codemojo",Context.MODE_PRIVATE);
-        final String referral = preferences.getString("referral", null);
+        final SharedPreferences preferences = context.getSharedPreferences("codemojo",Context.MODE_PRIVATE);
+        final String referral = preferences.getString("referrer", null);
 
         new Thread(new Runnable() {
             @Override
@@ -48,6 +48,9 @@ public class ReferralService extends BaseService {
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
+                                        if((boolean) result == true){
+                                            preferences.edit().remove("referral").apply();
+                                        }
                                         callback.available(result);
                                     }
                                 });
@@ -78,12 +81,16 @@ public class ReferralService extends BaseService {
                                             callback.available(code.getReferralCode());
                                         }
                                     });
+                                break;
                             case -403:
                                 raiseException(new InvalidArgumentsException(code.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(code.getMessage()));
+                                break;
                             case 404:
                                 raiseException(new ResourceNotFoundException(code.getMessage()));
+                                break;
                         }
                     }
                 } catch (IOException ignored) {
@@ -115,11 +122,14 @@ public class ReferralService extends BaseService {
                         switch (body.getCode()){
                             case -403:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
                             case 404:
                             case -405:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
+                                break;
                             case 200:
                                 if(callback != null)
                                     moveTo(new Runnable() {
@@ -128,6 +138,7 @@ public class ReferralService extends BaseService {
                                             callback.available(true);
                                         }
                                     });
+                                break;
                         }
                     }
                 } catch (IOException ignored) {
@@ -165,11 +176,14 @@ public class ReferralService extends BaseService {
                         switch (body.getCode()){
                             case -403:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
                             case 404:
                             case -405:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
+                                break;
                             case 200:
                                 if(callback != null) moveTo(new Runnable() {
                                     @Override
@@ -177,6 +191,7 @@ public class ReferralService extends BaseService {
                                         callback.available(true);
                                     }
                                 });
+                                break;
                         }
                     } else {
                         if(callback != null)

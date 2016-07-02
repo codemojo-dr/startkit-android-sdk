@@ -3,7 +3,6 @@ package io.codemojo.sdk.services;
 import io.codemojo.sdk.facades.CodemojoError;
 import io.codemojo.sdk.utils.AuthenticationInterceptor;
 import io.codemojo.sdk.utils.Constants;
-import io.codemojo.sdk.utils.LoggingInterceptor;
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -22,7 +21,6 @@ public abstract class BaseService extends UIThread {
         this.customer_id = authenticationService.getCustomerId();
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new AuthenticationInterceptor(authenticationService.getAccessToken()))
                 .build();
 

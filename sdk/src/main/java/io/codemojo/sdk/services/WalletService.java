@@ -38,8 +38,10 @@ public class WalletService extends BaseService {
                         switch (code.getCode()){
                             case -403:
                                 raiseException(new InvalidArgumentsException(code.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(code.getMessage()));
+                                break;
                             case 200:
                                  moveTo(new Runnable() {
                                     @Override
@@ -47,6 +49,7 @@ public class WalletService extends BaseService {
                                         callback.available(code.getBalance());
                                     }
                                 });
+                                break;
                         }
                     }
                 } catch (IOException ignored) {

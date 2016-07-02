@@ -1,8 +1,8 @@
 package io.codemojo.sample;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -31,7 +31,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                      * Initialize the Objects
                      */
                     AppContext.init(ChooserActivity.this, textView.getText().toString());
-
+                    AppContext.getCodemojoClient().getReferralService().useSignupReferral(ChooserActivity.this, null);
                     text.setVisibility(View.GONE);
                     findViewById(R.id.panelDemoChooser).setVisibility(View.VISIBLE);
                 }else{
@@ -55,6 +55,10 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                  * Launch the referral screen
                  */
                 ReferralScreenSettings settings = new ReferralScreenSettings("Codemojo Demo");
+                String message = "Hi there, I have been using " + settings.getAppNameVariable() + " and" +
+                        " found it very useful. Would be great if you can join me by clicking " +
+                        settings.getUrlVariable() + " or use the code " + settings.getReferralCodeVariable();
+                settings.setMessage(message);
                 settings.setBanner(R.color.colorAccent);
                 AppContext.getCodemojoClient().launchReferralScreen(settings);
                 break;

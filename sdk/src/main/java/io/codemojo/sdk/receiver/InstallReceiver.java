@@ -15,6 +15,9 @@ public class InstallReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         String referrerString = extras.getString("referrer");
         SharedPreferences preferences = context.getSharedPreferences("codemojo", Context.MODE_PRIVATE);
-        preferences.edit().putString("referrer", referrerString).apply();
+        if(referrerString != null && referrerString.contains("referrer=")) {
+            referrerString = referrerString.replace("referrer=","");
+            preferences.edit().putString("referrer", referrerString).apply();
+        }
     }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.Map;
 
@@ -22,15 +21,6 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-
-        AppContext.getCodemojoClient().getReferralService().useSignupReferral(this, new ResponseAvailable() {
-            @Override
-            public void available(Object result) {
-                if((boolean) result == false)
-                    Toast.makeText(GamificationActivity.this, "Sorry, referral already claimed", Toast.LENGTH_SHORT).show();
-            }
-        });
 
         AppContext.getCodemojoClient().setGamificationEarnedEventListener(this);
 
@@ -82,16 +72,16 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnUno:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("uno");
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("uno", null);
                 break;
             case R.id.btnStart:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("start");
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("start", null);
                 break;
             case R.id.btnCommunity:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("community");
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("community", null);
                 break;
             case R.id.btnLeader:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("leader");
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("leader", null);
                 break;
         }
     }

@@ -3,9 +3,9 @@ apply plugin: 'maven'
 
 ext {
     bintrayRepo = 'codemojo'
-    bintrayName = 'startkit-android-sdk'
+    bintrayName = 'sdk'
 
-    publishedGroupId = 'io.codemojo'
+    publishedGroupId = 'io.codemojo.sdk'
     libraryName = 'Codemojo SDK'
     artifact = 'sdk'
 
@@ -33,7 +33,7 @@ android {
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -45,8 +45,8 @@ android {
 
 uploadArchives {
     repositories.mavenDeployer {
-        pom.groupId = 'io.codemojo'
-        pom.artifactId = 'startkit-android-sdk'
+        pom.groupId = 'io.codemojo.sdk'
+        pom.artifactId = 'sdk'
         pom.version = '1.0.0'
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file:///Users/shoaib/Desktop/maven")
@@ -82,5 +82,3 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 }
-
-apply from: 'https://raw.githubusercontent.com/codemojo-dr/startkit-android-sdk/master/sdk/build.gradle'

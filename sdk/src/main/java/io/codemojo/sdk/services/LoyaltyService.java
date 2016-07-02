@@ -1,7 +1,6 @@
 package io.codemojo.sdk.services;
 
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
-import io.codemojo.sdk.exceptions.ResourceNotFoundException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
@@ -45,18 +44,26 @@ public class LoyaltyService extends BaseService {
             @Override
             public void run() {
                 try {
-                    ResponseLoyalty body = response.execute().body();
+                    final ResponseLoyalty body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
                             case -403:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
                             case 200:
                                 if(notification != null && body.getResult().isTierUpgrade()) {
                                     notification.newTierUpgrade(body.getResult().getTier());
                                 }
-                                callback.available(body.getResult());
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(body.getResult());
+                                    }
+                                });
+                                break;
                         }
                     }
                 } catch (Exception ignored) {
@@ -111,15 +118,23 @@ public class LoyaltyService extends BaseService {
             @Override
             public void run() {
                 try {
-                    ResponseLoyalty body = response.execute().body();
+                    final ResponseLoyalty body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
                             case -403:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
                             case 200:
-                                callback.available(body.getResult().getAward());
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(body.getResult().getAward());
+                                    }
+                                });
+                                break;
                         }
                     }
                 } catch (Exception ignored) {
@@ -152,15 +167,23 @@ public class LoyaltyService extends BaseService {
             @Override
             public void run() {
                 try {
-                    ResponseLoyaltyMaximumRedemption body = response.execute().body();
+                    final ResponseLoyaltyMaximumRedemption body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
                             case -403:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
                             case 200:
-                                callback.available(body.getResult());
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(body.getResult());
+                                    }
+                                });
+                                break;
                         }
                     }
                 } catch (Exception ignored) {
@@ -179,15 +202,23 @@ public class LoyaltyService extends BaseService {
             @Override
             public void run() {
                 try {
-                    ResponseLoyaltySummary body = response.execute().body();
+                    final ResponseLoyaltySummary body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
                             case -403:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
                             case 200:
-                                callback.available(body.getSummary());
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(body.getSummary());
+                                    }
+                                });
+                                break;
                         }
                     }
                 } catch (Exception ignored) {
