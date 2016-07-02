@@ -1,7 +1,6 @@
 package io.codemojo.sdk.responses;
 
 import io.codemojo.sdk.models.GenericResponse;
-import io.codemojo.sdk.models.Loyalty;
 
 /**
  * Created by shoaib on 26/10/14.

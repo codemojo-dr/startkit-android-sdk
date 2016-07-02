@@ -9,6 +9,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.codemojo.sdk.models.ReferralScreenSettings;
+
 public class ChooserActivity extends AppCompatActivity implements View.OnClickListener {
 
     @Override
@@ -16,12 +18,20 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chooser);
 
+        /*
+         * Get the user id to use in the sample app
+         */
         final EditText text = (EditText) findViewById(R.id.editClientID);
         text.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if(!textView.getText().toString().trim().equals("")){
+
+                    /*
+                     * Initialize the Objects
+                     */
                     AppContext.init(ChooserActivity.this, textView.getText().toString());
+
                     text.setVisibility(View.GONE);
                     findViewById(R.id.panelDemoChooser).setVisibility(View.VISIBLE);
                 }else{
@@ -31,7 +41,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
             }
         });
 
-        findViewById(R.id.btnGamification).setOnClickListener(this);
+        findViewById(R.id.btnGamificationAchievements).setOnClickListener(this);
         findViewById(R.id.btnReferral).setOnClickListener(this);
 
         getSupportActionBar().setTitle("Codemojo Demo");
@@ -41,9 +51,14 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnReferral:
-                AppContext.getCodemojoClient().launchReferralScreen();
+                /*
+                 * Launch the referral screen
+                 */
+                ReferralScreenSettings settings = new ReferralScreenSettings("Codemojo Demo");
+                settings.setBanner(R.color.colorAccent);
+                AppContext.getCodemojoClient().launchReferralScreen(settings);
                 break;
-            case R.id.btnGamification:
+            case R.id.btnGamificationAchievements:
                 startActivity(new Intent(this, GamificationActivity.class));
         }
     }

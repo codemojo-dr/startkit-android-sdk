@@ -1,4 +1,29 @@
 apply plugin: 'com.android.library'
+apply plugin: 'maven'
+
+ext {
+    bintrayRepo = 'codemojo'
+    bintrayName = 'startkit-android-sdk'
+
+    publishedGroupId = 'io.codemojo'
+    libraryName = 'Codemojo SDK'
+    artifact = 'sdk'
+
+    libraryDescription = 'SDK for Codemojo.io APIs'
+
+    siteUrl = 'https://github.com/codemojo-dr/startkit-android-sdk'
+    gitUrl = 'https://github.com/codemojo-dr/startkit-android-sdk.git'
+
+    libraryVersion = '1.0.0'
+
+    developerId = 'codemojo'
+    developerName = 'Shoaib'
+    developerEmail = 'support@codemojo.io'
+
+    licenseName = 'The Apache Software License, Version 2.0'
+    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+    allLicenses = ["Apache-2.0"]
+}
 
 android {
     compileSdkVersion 23
@@ -18,6 +43,36 @@ android {
     }
 }
 
+uploadArchives {
+    repositories.mavenDeployer {
+        pom.groupId = 'io.codemojo'
+        pom.artifactId = 'startkit-android-sdk'
+        pom.version = '1.0.0'
+        // Add other pom properties here if you want (developer details / licenses)
+        repository(url: "file:///Users/shoaib/Desktop/maven")
+    }
+
+    task androidJavadocs(type: Javadoc) {
+        source = android.sourceSets.main.java.srcDirs
+        classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+    }
+
+    task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+        classifier = 'javadoc'
+        from androidJavadocs.destinationDir
+    }
+
+    task androidSourcesJar(type: Jar) {
+        classifier = 'sources'
+        from android.sourceSets.main.java.srcDirs
+    }
+
+    artifacts {
+        archives androidSourcesJar
+        archives androidJavadocsJar
+    }
+}
+
 dependencies {
     compile 'com.android.support:appcompat-v7:23.+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
@@ -27,3 +82,5 @@ dependencies {
 
     testCompile 'junit:junit:4.12'
 }
+
+apply from: 'https://raw.githubusercontent.com/codemojo-dr/startkit-android-sdk/master/sdk/build.gradle'

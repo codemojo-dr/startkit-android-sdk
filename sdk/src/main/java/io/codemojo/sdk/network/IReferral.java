@@ -2,7 +2,6 @@ package io.codemojo.sdk.network;
 
 
 import io.codemojo.sdk.models.GenericResponse;
-import io.codemojo.sdk.models.ReferralCode;
 import io.codemojo.sdk.responses.ResponseReferralCode;
 import retrofit2.Call;
 import retrofit2.http.GET;

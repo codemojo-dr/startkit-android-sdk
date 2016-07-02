@@ -1,22 +1,10 @@
 package io.codemojo.sdk.services;
 
-import java.io.IOException;
-import java.util.Map;
-
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.ResourceNotFoundException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
-import io.codemojo.sdk.models.GamificationAchievement;
-import io.codemojo.sdk.models.GamificationStatus;
-import io.codemojo.sdk.models.GamificationSummary;
-import io.codemojo.sdk.models.Loyalty;
-import io.codemojo.sdk.models.LoyaltySummary;
-import io.codemojo.sdk.responses.ResponseGamification;
-import io.codemojo.sdk.responses.ResponseGamificationAchievement;
-import io.codemojo.sdk.responses.ResponseGamificationSummary;
-import io.codemojo.sdk.network.IGamification;
 import io.codemojo.sdk.network.ILoyalty;
 import io.codemojo.sdk.responses.ResponseLoyalty;
 import io.codemojo.sdk.responses.ResponseLoyaltyMaximumRedemption;
@@ -49,10 +37,7 @@ public class LoyaltyService extends BaseService {
      * @param tag
      * @param platform
      * @param service
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
-     * @throws ResourceNotFoundException
+     * @param callback
      */
     public void addLoyaltyPoints(String customer_id, float transaction, String transaction_id, String meta, String tag, String platform, String service, final ResponseAvailable callback) {
         final Call<ResponseLoyalty> response = loyaltyService.addLoyaltyPoints(customer_id, transaction, transaction_id, meta, tag, platform, service);
@@ -88,25 +73,26 @@ public class LoyaltyService extends BaseService {
      * @param transaction_id
      * @param meta
      * @param tag
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
-     * @throws ResourceNotFoundException
+     * @param callback
      */
-    public void addLoyaltyPoints(String customer_id, float transaction, String transaction_id, String meta, String tag, ResponseAvailable callback) throws InvalidArgumentsException, SetupIncompleteException {
+    public void addLoyaltyPoints(String customer_id, float transaction, String transaction_id, String meta, String tag, ResponseAvailable callback) {
         addLoyaltyPoints(customer_id, transaction, transaction_id, meta, tag, null, null, callback);
     }
 
-    public void addLoyaltyPoints(String customer_id, float transaction, String transaction_id, ResponseAvailable callback) throws InvalidArgumentsException, SetupIncompleteException {
+    /**
+     * @param customer_id
+     * @param transaction
+     * @param transaction_id
+     * @param callback
+     */
+    public void addLoyaltyPoints(String customer_id, float transaction, String transaction_id, ResponseAvailable callback) {
         addLoyaltyPoints(customer_id, transaction, transaction_id, null, null, null, null, callback);
     }
 
     /**
      * @param customer_id
      * @param transaction
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
+     * @param callback
      */
     public void calculateLoyaltyPoints(String customer_id, float transaction, ResponseAvailable callback) {
         calculateLoyaltyPoints(customer_id, transaction, null, null, callback);
@@ -117,9 +103,7 @@ public class LoyaltyService extends BaseService {
      * @param transaction
      * @param platform
      * @param service
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
+     * @param callback
      */
     public void calculateLoyaltyPoints(String customer_id, float transaction, String platform, String service, final ResponseAvailable callback) {
         final Call<ResponseLoyalty> response = loyaltyService.calculateLoyaltyPoints(customer_id, transaction, platform, service);
@@ -148,25 +132,21 @@ public class LoyaltyService extends BaseService {
     /**
      * @param customer_id
      * @param transaction
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
+     * @param callback
      */
-    public void maximumRedemption(String customer_id, float transaction, ResponseAvailable callback) throws InvalidArgumentsException, SetupIncompleteException {
+    public void maximumRedemption(String customer_id, float transaction, ResponseAvailable callback) {
         maximumRedemption(customer_id, transaction, callback);
     }
+
 
     /**
      * @param customer_id
      * @param transaction
      * @param platform
      * @param service
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
-     * @throws ResourceNotFoundException
+     * @param callback
      */
-    public void maximumRedemption(String customer_id, float transaction, String platform, String service, final ResponseAvailable callback) throws InvalidArgumentsException, SetupIncompleteException, ResourceNotFoundException {
+    public void maximumRedemption(String customer_id, float transaction, String platform, String service, final ResponseAvailable callback) {
         final Call<ResponseLoyaltyMaximumRedemption> response = loyaltyService.maximumRedemption(customer_id, transaction, platform, service);
         new Thread(new Runnable() {
             @Override
@@ -191,11 +171,9 @@ public class LoyaltyService extends BaseService {
     }
 
     /**
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
+     * @param callback
      */
-    public void getSummary(final ResponseAvailable callback) throws InvalidArgumentsException, SetupIncompleteException {
+    public void getSummary(final ResponseAvailable callback) {
         final Call<ResponseLoyaltySummary> response = loyaltyService.summary(getCustomerId());
         new Thread(new Runnable() {
             @Override

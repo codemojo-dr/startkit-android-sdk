@@ -5,8 +5,8 @@ import java.io.IOException;
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.ResponseAvailable;
-import io.codemojo.sdk.responses.ResponseWalletBalance;
 import io.codemojo.sdk.network.IWallet;
+import io.codemojo.sdk.responses.ResponseWalletBalance;
 import retrofit2.Call;
 
 /**
@@ -25,9 +25,7 @@ public class WalletService extends BaseService {
     }
 
     /**
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
+     * @param callback
      */
     public void getWalletBalance(final ResponseAvailable callback) {
         final Call<ResponseWalletBalance> response = walletService.getBalance(getCustomerId());

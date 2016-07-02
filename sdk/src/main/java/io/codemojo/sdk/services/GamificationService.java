@@ -1,7 +1,5 @@
 package io.codemojo.sdk.services;
 
-import android.util.Log;
-
 import java.io.IOException;
 
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
@@ -9,10 +7,10 @@ import io.codemojo.sdk.exceptions.ResourceNotFoundException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
+import io.codemojo.sdk.network.IGamification;
 import io.codemojo.sdk.responses.ResponseGamification;
 import io.codemojo.sdk.responses.ResponseGamificationAchievement;
 import io.codemojo.sdk.responses.ResponseGamificationSummary;
-import io.codemojo.sdk.network.IGamification;
 import retrofit2.Call;
 
 /**
@@ -35,12 +33,9 @@ public class GamificationService extends BaseService {
 
     /**
      * @param action_id
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
-     * @throws ResourceNotFoundException
+     * @param callback
      */
-    public void captureAction(String action_id, final ResponseAvailable callback) throws InvalidArgumentsException, SetupIncompleteException, ResourceNotFoundException {
+    public void captureAction(String action_id, final ResponseAvailable callback) {
         final Call<ResponseGamification> response = gamificationService.addAction(getCustomerId(), action_id);
         new Thread(new Runnable() {
             @Override
@@ -72,10 +67,6 @@ public class GamificationService extends BaseService {
 
     /**
      * @param action_id
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
-     * @throws ResourceNotFoundException
      */
     public void captureAchievementsAction(String action_id)  {
         captureAchievementsAction(action_id, null);
@@ -84,10 +75,6 @@ public class GamificationService extends BaseService {
     /**
      * @param action_id
      * @param category_id
-     * @return
-     * @throws InvalidArgumentsException
-     * @throws SetupIncompleteException
-     * @throws ResourceNotFoundException
      */
     public void captureAchievementsAction(String action_id, String category_id) {
         final Call<ResponseGamificationAchievement> response = gamificationService.addAchievement(getCustomerId(), action_id, category_id);
@@ -125,11 +112,9 @@ public class GamificationService extends BaseService {
     }
 
     /**
-     * @return
-     * @throws SetupIncompleteException
-     * @throws InvalidArgumentsException
+     * @param callback
      */
-    public void getUserSummary(final ResponseAvailable callback) throws SetupIncompleteException, InvalidArgumentsException {
+    public void getUserSummary(final ResponseAvailable callback) {
         final Call<ResponseGamificationSummary> response = gamificationService.getSummary(getCustomerId());
         new Thread(new Runnable() {
             @Override

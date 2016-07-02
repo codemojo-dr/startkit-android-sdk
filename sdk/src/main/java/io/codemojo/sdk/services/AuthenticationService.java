@@ -61,6 +61,9 @@ public class AuthenticationService extends UIThread {
         return environment;
     }
 
+    /**
+     * @return String
+     */
     protected String getAccessToken(){
         try {
             if(synchronizer != null)
@@ -70,6 +73,9 @@ public class AuthenticationService extends UIThread {
         return token == null? "": token.getAccessToken();
     }
 
+    /**
+     * @return String
+     */
     protected String getCustomerId() {
         return customer_id;
     }

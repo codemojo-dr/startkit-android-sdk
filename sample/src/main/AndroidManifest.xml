@@ -14,24 +14,16 @@
 
         <activity android:name=".GamificationActivity" />
 
-        <activity android:name="io.codemojo.sdk.ui.ReferralActivity">
+        <activity android:name=".AchievementsActivity" />
+        <activity android:name=".ChooserActivity">
             <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
-                <data
-                    android:host="refer.codemojo.io"
-                    android:pathPrefix="/refer"
-                    android:scheme="http" />
-                <!-- note that the leading "/" is required for pathPrefix -->
-                <!-- Accepts URIs that begin with "example://gizmos” -->
-                <data
-                    android:host="refer"
-                    android:scheme="codemojo" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity android:name="io.codemojo.sdk.ui.ReferralActivity"/>
 
         <receiver
             android:name="io.codemojo.sdk.receiver.InstallReceiver"
@@ -41,14 +33,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".AchievementsActivity" />
-        <activity android:name=".ChooserActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

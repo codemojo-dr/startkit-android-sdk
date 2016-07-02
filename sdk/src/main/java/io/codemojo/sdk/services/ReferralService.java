@@ -10,7 +10,6 @@ import io.codemojo.sdk.exceptions.ResourceNotFoundException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.GenericResponse;
-import io.codemojo.sdk.models.ReferralCode;
 import io.codemojo.sdk.network.IReferral;
 import io.codemojo.sdk.responses.ResponseReferralCode;
 import retrofit2.Call;
@@ -30,6 +29,10 @@ public class ReferralService extends BaseService {
         referralService = (IReferral) getService();
     }
 
+    /**
+     * @param context
+     * @param callback
+     */
     public void useSignupReferral(Context context, final ResponseAvailable callback){
         SharedPreferences preferences = context.getSharedPreferences("codemojo",Context.MODE_PRIVATE);
         final String referral = preferences.getString("referral", null);
@@ -56,10 +59,7 @@ public class ReferralService extends BaseService {
     }
 
     /**
-     * @return String
-     * @throws ResourceNotFoundException
-     * @throws SetupIncompleteException
-     * @throws InvalidArgumentsException
+     * @param callback
      */
     public void getReferralCode(final ResponseAvailable callback) {
         final Call<ResponseReferralCode> response = referralService.getReferralCode(getCustomerId());
@@ -102,10 +102,7 @@ public class ReferralService extends BaseService {
 
     /**
      * @param referral_code
-     * @return boolean
-     * @throws SetupIncompleteException
-     * @throws InvalidArgumentsException
-     * @throws ResourceNotFoundException
+     * @param callback
      */
     public void applyReferralCode(String referral_code, final ResponseAvailable callback) {
         final Call<GenericResponse> response = referralService.applyReferralCode(getCustomerId(), referral_code);
@@ -155,10 +152,7 @@ public class ReferralService extends BaseService {
     }
 
     /**
-     * @return boolean
-     * @throws ResourceNotFoundException
-     * @throws SetupIncompleteException
-     * @throws InvalidArgumentsException
+     * @param callback
      */
     public void markActionAsComplete(final ResponseAvailable callback) {
         final Call<GenericResponse> response = referralService.markActionComplete(getCustomerId());

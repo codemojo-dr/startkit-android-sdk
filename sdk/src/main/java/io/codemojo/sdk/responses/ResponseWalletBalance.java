@@ -1,7 +1,5 @@
 package io.codemojo.sdk.responses;
 
-import java.util.Map;
-
 import io.codemojo.sdk.models.GenericResponse;
 import io.codemojo.sdk.models.WalletBalance;
 

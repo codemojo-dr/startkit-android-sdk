@@ -34,13 +34,19 @@
         <Button
             android:id="@+id/btnReferral"
             android:text="Referral"
-            android:layout_width="200dp"
+            android:layout_width="300dp"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btnGamification"
-            android:text="Gamification"
-            android:layout_width="200dp"
+            android:id="@+id/btnGamificationAchievements"
+            android:text="Gamification - Achievements"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/btnGamificationBadges"
+            android:text="Gamification - Badges"
+            android:layout_width="300dp" android:enabled="false"
             android:layout_height="wrap_content" />
     </LinearLayout>
 
