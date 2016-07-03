@@ -35,7 +35,7 @@ public class AuthenticationService extends UIThread {
         this.environment = environment;
 
         oAuthService = new Retrofit.Builder().baseUrl(Constants.getEndpoint(environment)).addConverterFactory(GsonConverterFactory.create()).build().create(IAccessToken.class);
-        response = oAuthService.getAppSecret(app_token);
+        response = oAuthService.getAppSecret(app_token, customer_id);
         new Thread(new Runnable() {
             @Override
             public void run() {

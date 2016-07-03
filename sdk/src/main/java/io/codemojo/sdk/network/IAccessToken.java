@@ -14,6 +14,6 @@ public interface IAccessToken {
 
     @POST("/oauth/app")
     @FormUrlEncoded
-    Call<OAuth> getAppSecret(@Field("app_token") String app_token);
+    Call<OAuth> getAppSecret(@Field("app_token") String app_token, @Field("customer_id") String customer_id);
 
 }

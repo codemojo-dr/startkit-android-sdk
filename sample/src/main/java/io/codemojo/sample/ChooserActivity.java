@@ -56,7 +56,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                  */
                 ReferralScreenSettings settings = new ReferralScreenSettings("Codemojo Demo");
                 String message = "Hi there, I have been using " + settings.getAppNameVariable() + " and" +
-                        " found it very useful. Would be great if you can join me by clicking " +
+                        " found it very useful. \n\nWould be great if you can join me by clicking " +
                         settings.getUrlVariable() + " or use the code " + settings.getReferralCodeVariable();
                 settings.setMessage(message);
                 settings.setBanner(R.color.colorAccent);
