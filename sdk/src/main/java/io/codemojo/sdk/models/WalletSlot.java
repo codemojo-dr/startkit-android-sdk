@@ -5,7 +5,7 @@ package io.codemojo.sdk.models;
  */
 public class WalletSlot {
     private float raw;
-    private float conversion;
+    private float converted;
     private float c;
 
     public float getRawPoints() {
@@ -13,7 +13,7 @@ public class WalletSlot {
     }
 
     public float getConvertedPoints() {
-        return conversion;
+        return converted;
     }
 
     public float getConversionRatio() {

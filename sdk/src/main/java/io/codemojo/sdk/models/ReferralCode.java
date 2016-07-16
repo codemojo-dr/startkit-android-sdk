@@ -7,6 +7,7 @@ public class ReferralCode {
 
     private String url;
     private String code;
+    private ReferralReward reward;
 
     public String getUrl() {
         return url;
@@ -14,5 +15,9 @@ public class ReferralCode {
 
     public String getCode() {
         return code;
+    }
+
+    public ReferralReward getReward() {
+        return reward;
     }
 }

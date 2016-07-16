@@ -11,22 +11,34 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/banner"
+            android:id="@+id/banner" android:scaleType="fitXY"
             android:background="#eaeaea"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 
-        <TextView
-            android:translationZ="5dp"
-            android:fadingEdgeLength="1dp" android:layout_marginBottom="-20dp"
-            android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"
-            android:textSize="40sp" android:textStyle="bold"
-            android:id="@+id/lblReferralCode" android:padding="10dp"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:background="@drawable/dotted_border" android:text="-----" />
+        <FrameLayout
+            android:background="@color/translucent_black"
+            android:padding="5dp"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:fadingEdgeLength="1dp" android:layout_centerHorizontal="true"
+                android:textSize="30sp" android:textStyle="bold" android:textColor="@color/white"
+                android:id="@+id/lblReferralCode" android:padding="10dp"
+                android:layout_width="wrap_content" android:layout_height="wrap_content"
+                android:background="@color/translucent_black_dark" android:text="-----" />
+        </FrameLayout>
 
     </RelativeLayout>
 
+
+    <TextView
+        android:gravity="center" android:layout_margin="10dp"
+        android:shadowRadius="1" android:shadowDx="1" android:shadowDy="1" android:shadowColor="@color/translucent_black_light"
+        android:layout_centerHorizontal="true" android:id="@+id/lblReferralDescription" android:layout_marginTop="10dp"
+        android:layout_width="match_parent" android:textSize="16dp"
+        android:layout_height="wrap_content" />
 
     <LinearLayout
         android:paddingBottom="@dimen/activity_vertical_margin"
@@ -37,9 +49,7 @@
         android:layout_weight="0.5"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Please share the code" />
+
 
         <Button
             android:id="@+id/btnInvite"
@@ -48,18 +58,36 @@
             android:layout_height="wrap_content" />
 
         <LinearLayout
-            android:layout_marginTop="50dp"
+            android:gravity="center"
+            android:layout_marginTop="5dp"
             android:orientation="vertical"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
             <TextView
+                android:id="@+id/lblEnterReferral"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:text="Have a Referral code?" />
 
-            <EditText
-                android:id="@+id/promoEnter"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content" />
+            <RelativeLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:visibility="gone"
+                android:id="@+id/panelEnterPromo">
+
+                <EditText
+                    android:imeOptions="actionDone"
+                    android:maxLines="1" android:hint="Enter referral code"
+                    android:id="@+id/promoEnter"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content" />
+
+                <ImageButton android:id="@+id/btnProcessPromo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/promoEnter"
+                    android:layout_alignBottom="@+id/promoEnter"
+                    android:layout_alignRight="@+id/promoEnter"
+                    android:background="@android:drawable/arrow_down_float"/>
+
+            </RelativeLayout>
         </LinearLayout>
 
     </LinearLayout>

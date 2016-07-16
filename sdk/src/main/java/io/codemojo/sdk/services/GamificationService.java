@@ -11,6 +11,7 @@ import io.codemojo.sdk.network.IGamification;
 import io.codemojo.sdk.responses.ResponseGamification;
 import io.codemojo.sdk.responses.ResponseGamificationAchievement;
 import io.codemojo.sdk.responses.ResponseGamificationSummary;
+import io.codemojo.sdk.responses.ResponseWalletTransaction;
 import retrofit2.Call;
 
 /**
@@ -20,6 +21,7 @@ public class GamificationService extends BaseService {
 
     private final IGamification gamificationService;
     private GamificationEarnedEvent notification;
+    private int transactionPage = 0;
 
     /**
      * @param authenticationService
@@ -50,6 +52,7 @@ public class GamificationService extends BaseService {
                             case 400:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
+                            case 505:
                             case 404:
                             case -405:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
@@ -101,6 +104,7 @@ public class GamificationService extends BaseService {
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
                             case 404:
+                            case 505:
                             case -405:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
                                 break;
@@ -176,4 +180,56 @@ public class GamificationService extends BaseService {
         }).start();
     }
 
+    public GamificationService getGamificationTransactions(int count, final ResponseAvailable callback){
+        return nextTransaction(count, callback);
+    }
+
+    private GamificationService getGamificationTransactions(int count, final ResponseAvailable callback, int page){
+        final Call<ResponseWalletTransaction> response = gamificationService.getTransaction(getCustomerId(), count, 3, page);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    final ResponseWalletTransaction code  = response.execute().body();
+                    if(code != null){
+                        switch (code.getCode()){
+                            case -403:
+                                raiseException(new InvalidArgumentsException(code.getMessage()));
+                                break;
+                            case 400:
+                                raiseException(new SetupIncompleteException(code.getMessage()));
+                                break;
+                            case 200:
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(code.getTransactions());
+                                    }
+                                });
+                                break;
+                        }
+                    }
+                } catch (IOException ignored) {
+                }
+            }
+        }).start();
+        return this;
+    }
+
+    public void reset(){
+        transactionPage = 1;
+    }
+
+    public GamificationService prevTransaction(int count, ResponseAvailable callback){
+        transactionPage--;
+        if(transactionPage <= 0){
+            transactionPage = 1;
+        }
+        return getGamificationTransactions(count, callback, transactionPage);
+    }
+
+    public GamificationService nextTransaction(int count, ResponseAvailable callback){
+        transactionPage++;
+        return getGamificationTransactions(count, callback, transactionPage);
+    }
 }

@@ -13,6 +13,7 @@ import io.codemojo.sdk.services.GamificationService;
 import io.codemojo.sdk.services.LoyaltyService;
 import io.codemojo.sdk.services.ReferralService;
 import io.codemojo.sdk.services.WalletService;
+import io.codemojo.sdk.ui.GamificationTransactions;
 import io.codemojo.sdk.ui.ReferralActivity;
 
 /**
@@ -71,6 +72,11 @@ public class Codemojo {
         Intent referralIntent = new Intent(context, ReferralActivity.class);
         referralIntent.putExtra("settings", settings);
         context.startActivity(referralIntent);
+    }
+
+    public void launchGamificationTransactionScreen(){
+        Intent gamificationTransactionIntent = new Intent(context, GamificationTransactions.class);
+        context.startActivity(gamificationTransactionIntent);
     }
 
     /**

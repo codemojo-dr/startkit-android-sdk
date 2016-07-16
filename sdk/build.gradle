@@ -1,30 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven'
 
-ext {
-    bintrayRepo = 'codemojo'
-    bintrayName = 'sdk'
-
-    publishedGroupId = 'io.codemojo.sdk'
-    libraryName = 'Codemojo SDK'
-    artifact = 'sdk'
-
-    libraryDescription = 'SDK for Codemojo.io APIs'
-
-    siteUrl = 'https://github.com/codemojo-dr/startkit-android-sdk'
-    gitUrl = 'https://github.com/codemojo-dr/startkit-android-sdk.git'
-
-    libraryVersion = '1.0.0'
-
-    developerId = 'codemojo'
-    developerName = 'Shoaib'
-    developerEmail = 'support@codemojo.io'
-
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
-}
-
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
@@ -32,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 3
+        versionName "1.0.2"
     }
     buildTypes {
         release {
@@ -47,7 +23,7 @@ uploadArchives {
     repositories.mavenDeployer {
         pom.groupId = 'io.codemojo.sdk'
         pom.artifactId = 'sdk'
-        pom.version = '1.0.1'
+        pom.version = '1.0.2'
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file:///Users/shoaib/Desktop/maven")
     }

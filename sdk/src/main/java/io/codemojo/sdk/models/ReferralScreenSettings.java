@@ -9,10 +9,14 @@ public class ReferralScreenSettings implements Serializable {
 
     private static final String DEFAULT_MESSAGE = "Hey! I was trying out this app {app} and I found it pretty interesting.\n\n" +
             "I would like you to try it out as well {url}";
+    private String referralDesription = "Your friend will get Rs.{friend} and you will get Rs.{you} after their first transaction";
+
     private String message;
     private String urlVariable = "{url}";
     private String appNameVariable = "{app}";
     private String referralCodeVariable = "{code}";
+    private String youVariable = "{you}";
+    private String friendVariable = "{friend}";
     private String subjectLine = "Try out the app {app}";
     private String pageTite = "Invite Friends";
     private String appName;
@@ -39,6 +43,25 @@ public class ReferralScreenSettings implements Serializable {
 
     public String getReferralCodeVariable() {
         return referralCodeVariable;
+    }
+
+    public void setReferralDesription(String referralDesription) {
+        this.referralDesription = referralDesription;
+    }
+
+    public String getReferralDesription() {
+        String desc = referralDesription.replace("{you}", String.valueOf(code.getReward().getYou()));
+        desc = desc.replace("{friend}", String.valueOf(code.getReward().getFriend()));
+        return desc;
+    }
+
+    public String getYouVariable() {
+        return youVariable;
+    }
+
+
+    public String getFriendVariable() {
+        return friendVariable;
     }
 
     public String getUrlVariable() {

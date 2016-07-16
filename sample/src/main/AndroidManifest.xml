@@ -24,6 +24,7 @@
         </activity>
 
         <activity android:name="io.codemojo.sdk.ui.ReferralActivity"/>
+        <activity android:name="io.codemojo.sdk.ui.GamificationTransactions"/>
 
         <receiver
             android:name="io.codemojo.sdk.receiver.InstallReceiver"

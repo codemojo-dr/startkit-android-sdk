@@ -5,9 +5,11 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Map;
 
+import io.codemojo.sdk.facades.CodemojoException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
@@ -15,7 +17,8 @@ import io.codemojo.sdk.models.GamificationAchievement;
 import io.codemojo.sdk.models.WalletBalance;
 
 
-public class GamificationActivity extends AppCompatActivity implements LoyaltyEvent, GamificationEarnedEvent, View.OnClickListener {
+public class GamificationActivity extends AppCompatActivity implements LoyaltyEvent, GamificationEarnedEvent,
+        CodemojoException,View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
         findViewById(R.id.btnStart).setOnClickListener(this);
         findViewById(R.id.btnCommunity).setOnClickListener(this);
         findViewById(R.id.btnLeader).setOnClickListener(this);
+        findViewById(R.id.history).setOnClickListener(this);
     }
 
     @Override
@@ -39,7 +43,9 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
             AppContext.getCodemojoClient().getWalletService().getWalletBalance(new ResponseAvailable() {
                 @Override
                 public void available(Object balance) {
-                    ((TextView) findViewById(R.id.lblWalletBalance)).setText((int) ((WalletBalance) balance).getSlot3().getRawPoints() + " pts");
+                    ((TextView) findViewById(R.id.lblWalletBalance)).setText(
+                            (int) ((WalletBalance) balance).getSlot3().getRawPoints() + " pts = $"
+                    + ((WalletBalance) balance).getSlot3().getConvertedPoints());
                 }
             });
         }
@@ -72,7 +78,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnUno:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("uno", null);
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("recepie-upload", null);
                 break;
             case R.id.btnStart:
                 AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("start", null);
@@ -83,6 +89,14 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
             case R.id.btnLeader:
                 AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("leader", null);
                 break;
+            case R.id.history:
+                AppContext.getCodemojoClient().launchGamificationTransactionScreen();
+                break;
         }
+    }
+
+    @Override
+    public void onError(Exception exception) {
+        Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
     }
 }

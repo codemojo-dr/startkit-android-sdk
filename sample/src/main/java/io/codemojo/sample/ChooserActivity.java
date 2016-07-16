@@ -43,6 +43,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
 
         findViewById(R.id.btnGamificationAchievements).setOnClickListener(this);
         findViewById(R.id.btnReferral).setOnClickListener(this);
+        findViewById(R.id.btnGamificationBadges).setOnClickListener(this);
 
         getSupportActionBar().setTitle("Codemojo Demo");
     }
@@ -59,11 +60,12 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                         " found it very useful. \n\nWould be great if you can join me by clicking " +
                         settings.getUrlVariable() + " or use the code " + settings.getReferralCodeVariable();
                 settings.setMessage(message);
-                settings.setBanner(R.color.colorAccent);
+                settings.setBanner(R.drawable.sample_invite);
                 AppContext.getCodemojoClient().launchReferralScreen(settings);
                 break;
             case R.id.btnGamificationAchievements:
                 startActivity(new Intent(this, GamificationActivity.class));
+                break;
         }
     }
 }
