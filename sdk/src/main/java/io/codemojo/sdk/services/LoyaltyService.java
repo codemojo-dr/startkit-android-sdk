@@ -1,6 +1,7 @@
 package io.codemojo.sdk.services;
 
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
+import io.codemojo.sdk.exceptions.SDKInitializationException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
@@ -39,6 +40,10 @@ public class LoyaltyService extends BaseService {
      * @param callback
      */
     public void addLoyaltyPoints(String customer_id, float transaction, String transaction_id, String meta, String tag, String platform, String service, final ResponseAvailable callback) {
+        if (loyaltyService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseLoyalty> response = loyaltyService.addLoyaltyPoints(customer_id, transaction, transaction_id, meta, tag, platform, service);
         new Thread(new Runnable() {
             @Override
@@ -113,6 +118,10 @@ public class LoyaltyService extends BaseService {
      * @param callback
      */
     public void calculateLoyaltyPoints(String customer_id, float transaction, String platform, String service, final ResponseAvailable callback) {
+        if (loyaltyService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseLoyalty> response = loyaltyService.calculateLoyaltyPoints(customer_id, transaction, platform, service);
         new Thread(new Runnable() {
             @Override
@@ -162,6 +171,10 @@ public class LoyaltyService extends BaseService {
      * @param callback
      */
     public void maximumRedemption(String customer_id, float transaction, String platform, String service, final ResponseAvailable callback) {
+        if (loyaltyService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseLoyaltyMaximumRedemption> response = loyaltyService.maximumRedemption(customer_id, transaction, platform, service);
         new Thread(new Runnable() {
             @Override
@@ -197,6 +210,10 @@ public class LoyaltyService extends BaseService {
      * @param callback
      */
     public void getSummary(final ResponseAvailable callback) {
+        if (loyaltyService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseLoyaltySummary> response = loyaltyService.summary(getCustomerId());
         new Thread(new Runnable() {
             @Override

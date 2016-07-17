@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.ResourceNotFoundException;
+import io.codemojo.sdk.exceptions.SDKInitializationException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
@@ -38,6 +39,10 @@ public class GamificationService extends BaseService {
      * @param callback
      */
     public void captureAction(String action_id, final ResponseAvailable callback) {
+        if (gamificationService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseGamification> response = gamificationService.addAction(getCustomerId(), action_id);
         new Thread(new Runnable() {
             @Override
@@ -89,6 +94,10 @@ public class GamificationService extends BaseService {
      * @param category_id
      */
     public void captureAchievementsAction(String action_id, String category_id, final ResponseAvailable callback) {
+        if (gamificationService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseGamificationAchievement> response = gamificationService.addAchievement(getCustomerId(), action_id, category_id);
         new Thread(new Runnable() {
             @Override
@@ -149,6 +158,10 @@ public class GamificationService extends BaseService {
      * @param callback
      */
     public void getUserSummary(final ResponseAvailable callback) {
+        if (gamificationService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseGamificationSummary> response = gamificationService.getSummary(getCustomerId());
         new Thread(new Runnable() {
             @Override
@@ -185,6 +198,10 @@ public class GamificationService extends BaseService {
     }
 
     private GamificationService getGamificationTransactions(int count, final ResponseAvailable callback, int page){
+        if (gamificationService == null){
+            raiseException(new SDKInitializationException());
+            return null;
+        }
         final Call<ResponseWalletTransaction> response = gamificationService.getTransaction(getCustomerId(), count, 3, page);
         new Thread(new Runnable() {
             @Override

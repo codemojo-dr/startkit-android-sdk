@@ -15,13 +15,14 @@ import android.widget.Toast;
 
 import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.R;
+import io.codemojo.sdk.facades.CodemojoException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.ReferralCode;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.services.ReferralService;
 import io.codemojo.sdk.utils.Clipboard;
 
-public class ReferralActivity extends AppCompatActivity implements View.OnClickListener {
+public class ReferralActivity extends AppCompatActivity implements View.OnClickListener, CodemojoException {
 
     private Button btnInvite;
     private ReferralCode referral;
@@ -35,6 +36,8 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
         setContentView(R.layout.activity_referral);
 
         referralService = new ReferralService(Codemojo.getAuthenticationService());
+
+        referralService.setErrorHandler(this);
 
         settings = (ReferralScreenSettings) getIntent().getSerializableExtra("settings");
 
@@ -123,5 +126,10 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
         } else if (i == R.id.btnProcessPromo) {
             processPromoCode(promoCode.getText().toString());
         }
+    }
+
+    @Override
+    public void onError(Exception exception) {
+        Toast.makeText(this, exception.getMessage(), Toast.LENGTH_SHORT).show();
     }
 }

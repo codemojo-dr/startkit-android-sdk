@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.0.2"
+        versionCode 4
+        versionName "1.0.3"
     }
     buildTypes {
         release {
@@ -23,7 +23,7 @@ uploadArchives {
     repositories.mavenDeployer {
         pom.groupId = 'io.codemojo.sdk'
         pom.artifactId = 'sdk'
-        pom.version = '1.0.2'
+        pom.version = '1.0.3'
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file:///Users/shoaib/Desktop/maven")
     }

@@ -18,11 +18,15 @@ public abstract class BaseService extends UIThread {
     private CodemojoException exception;
 
     public BaseService(AuthenticationService authenticationService, Class serviceClass) {
+        if (authenticationService == null){
+            service = customer_id = null;
+            raiseException(new Exception("Cannot authenticate"));
+            return;
+        }
         setContext(authenticationService.getContext());
         this.customer_id = authenticationService.getCustomerId();
 
         OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new AuthenticationInterceptor(authenticationService.getAccessToken()))
                 .build();
 
@@ -32,6 +36,9 @@ public abstract class BaseService extends UIThread {
                 .build().create(serviceClass);
     }
 
+    public void setErrorHandler(CodemojoException handler){
+        this.exception = handler;
+    }
 
     protected String getCustomerId() {
         return customer_id;
@@ -41,10 +48,15 @@ public abstract class BaseService extends UIThread {
         return service;
     }
 
-    protected void raiseException(Exception exception){
+    protected void raiseException(final Exception e){
         if(this.exception == null){
             return;
         }
-        this.exception.onError(exception);
+        moveTo(new Runnable() {
+            @Override
+            public void run() {
+                exception.onError(e);
+            }
+        });
     }
 }

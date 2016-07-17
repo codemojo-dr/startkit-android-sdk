@@ -3,6 +3,7 @@ package io.codemojo.sdk.services;
 import java.io.IOException;
 
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
+import io.codemojo.sdk.exceptions.SDKInitializationException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.WalletTransaction;
@@ -31,6 +32,10 @@ public class WalletService extends BaseService {
      * @param callback
      */
     public void getWalletBalance(final ResponseAvailable callback) {
+        if (walletService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseWalletBalance> response = walletService.getBalance(getCustomerId());
         new Thread(new Runnable() {
             @Override
@@ -66,6 +71,10 @@ public class WalletService extends BaseService {
     }
 
     private WalletService getWalletTransactions(int count, final ResponseAvailable callback, int page){
+        if (walletService == null){
+            raiseException(new SDKInitializationException());
+            return null;
+        }
         final Call<ResponseWalletTransaction> response = walletService.getTransaction(getCustomerId(), count, -1, page);
         new Thread(new Runnable() {
             @Override

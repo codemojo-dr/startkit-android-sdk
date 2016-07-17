@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 
 import java.io.IOException;
 
+import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.ResourceNotFoundException;
+import io.codemojo.sdk.exceptions.SDKInitializationException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.GenericResponse;
@@ -65,6 +67,10 @@ public class ReferralService extends BaseService {
      * @param callback
      */
     public void getReferralCode(final ResponseAvailable callback) {
+        if (referralService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<ResponseReferralCode> response = referralService.getReferralCode(getCustomerId());
         new Thread(new Runnable() {
             @Override
@@ -93,7 +99,7 @@ public class ReferralService extends BaseService {
                                 break;
                         }
                     }
-                } catch (IOException ignored) {
+                } catch (Exception ignored) {
                     raiseException(ignored);
                     if(callback != null)
                         moveTo(new Runnable() {
@@ -112,6 +118,10 @@ public class ReferralService extends BaseService {
      * @param callback
      */
     public void applyReferralCode(String referral_code, final ResponseAvailable callback) {
+        if (referralService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<GenericResponse> response = referralService.applyReferralCode(getCustomerId(), referral_code);
         new Thread(new Runnable() {
             @Override
@@ -166,6 +176,10 @@ public class ReferralService extends BaseService {
      * @param callback
      */
     public void markActionAsComplete(final ResponseAvailable callback) {
+        if (referralService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
         final Call<GenericResponse> response = referralService.markActionComplete(getCustomerId());
         new Thread(new Runnable() {
             @Override

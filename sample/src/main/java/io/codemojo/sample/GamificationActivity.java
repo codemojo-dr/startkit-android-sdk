@@ -18,7 +18,7 @@ import io.codemojo.sdk.models.WalletBalance;
 
 
 public class GamificationActivity extends AppCompatActivity implements LoyaltyEvent, GamificationEarnedEvent,
-        CodemojoException,View.OnClickListener {
+        CodemojoException, View.OnClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +26,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
         setContentView(R.layout.activity_main);
 
         AppContext.getCodemojoClient().setGamificationEarnedEventListener(this);
+        AppContext.getCodemojoClient().getGamificationService().setErrorHandler(this);
 
         onActivityResult(0,0,null);
 
@@ -78,7 +79,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnUno:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("recepie-upload", null);
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("uno", null);
                 break;
             case R.id.btnStart:
                 AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("start", null);
