@@ -6,10 +6,10 @@ import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.SDKInitializationException;
 import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.ResponseAvailable;
-import io.codemojo.sdk.models.WalletTransaction;
 import io.codemojo.sdk.network.IWallet;
 import io.codemojo.sdk.responses.ResponseWalletBalance;
 import io.codemojo.sdk.responses.ResponseWalletTransaction;
+import io.codemojo.sdk.utils.APICodes;
 import retrofit2.Call;
 
 /**
@@ -44,13 +44,16 @@ public class WalletService extends BaseService {
                     final ResponseWalletBalance code  = response.execute().body();
                     if(code != null){
                         switch (code.getCode()){
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(code.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(code.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(code.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                  moveTo(new Runnable() {
                                     @Override
                                     public void run() {
@@ -83,13 +86,16 @@ public class WalletService extends BaseService {
                     final ResponseWalletTransaction code  = response.execute().body();
                     if(code != null){
                         switch (code.getCode()){
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(code.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(code.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(code.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {

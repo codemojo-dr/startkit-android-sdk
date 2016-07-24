@@ -14,6 +14,7 @@ import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.GenericResponse;
 import io.codemojo.sdk.network.IReferral;
 import io.codemojo.sdk.responses.ResponseReferralCode;
+import io.codemojo.sdk.utils.APICodes;
 import retrofit2.Call;
 
 /**
@@ -79,7 +80,7 @@ public class ReferralService extends BaseService {
                     final ResponseReferralCode code = response.execute().body();
                     if(code != null){
                         switch (code.getCode()){
-                            case 200:
+                            case APICodes.RESPONSE_SUCCESS:
                                 if(callback != null)
                                     moveTo(new Runnable() {
                                         @Override
@@ -88,14 +89,17 @@ public class ReferralService extends BaseService {
                                         }
                                     });
                                 break;
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(code.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(code.getMessage()));
                                 break;
-                            case 404:
+                            case APICodes.RESOURCE_NOT_FOUND:
                                 raiseException(new ResourceNotFoundException(code.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(code.getMessage()));
                                 break;
                         }
                     }
@@ -130,17 +134,19 @@ public class ReferralService extends BaseService {
                     final GenericResponse body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()){
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 404:
-                            case -405:
+                            case APICodes.RESOURCE_NOT_FOUND:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 if(callback != null)
                                     moveTo(new Runnable() {
                                         @Override
@@ -188,17 +194,19 @@ public class ReferralService extends BaseService {
                     GenericResponse body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()){
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 404:
-                            case -405:
+                            case APICodes.RESOURCE_NOT_FOUND:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 if(callback != null) moveTo(new Runnable() {
                                     @Override
                                     public void run() {

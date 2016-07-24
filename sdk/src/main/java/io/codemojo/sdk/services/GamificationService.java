@@ -13,6 +13,7 @@ import io.codemojo.sdk.responses.ResponseGamification;
 import io.codemojo.sdk.responses.ResponseGamificationAchievement;
 import io.codemojo.sdk.responses.ResponseGamificationSummary;
 import io.codemojo.sdk.responses.ResponseWalletTransaction;
+import io.codemojo.sdk.utils.APICodes;
 import retrofit2.Call;
 
 /**
@@ -51,18 +52,19 @@ public class GamificationService extends BaseService {
                     final ResponseGamification body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 505:
-                            case 404:
-                            case -405:
+                            case APICodes.RESOURCE_NOT_FOUND:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 if(notification != null && body.getGamificationStatus().isBadgeUpgrade()) {
                                     notification.newBadgeUnlocked(body.getGamificationStatus().getCurrentPoints(), body.getGamificationStatus().getBadge());
                                 }
@@ -106,18 +108,19 @@ public class GamificationService extends BaseService {
                     final ResponseGamificationAchievement body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 404:
-                            case 505:
-                            case -405:
+                            case APICodes.RESOURCE_NOT_FOUND:
                                 raiseException(new ResourceNotFoundException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 if(callback != null){
                                     moveTo(new Runnable() {
                                         @Override
@@ -170,13 +173,16 @@ public class GamificationService extends BaseService {
                     final ResponseGamificationSummary body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
@@ -210,13 +216,16 @@ public class GamificationService extends BaseService {
                     final ResponseWalletTransaction code  = response.execute().body();
                     if(code != null){
                         switch (code.getCode()){
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(code.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(code.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(code.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {

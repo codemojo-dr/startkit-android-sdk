@@ -32,7 +32,7 @@ public interface ILoyalty {
     Call<ResponseLoyaltyMaximumRedemption> maximumRedemption(@Query("customer_id") String customer_id, @Query("transaction") float transaction_value,
                                                              @Query("platform") String platform, @Query("service") String service);
 
-    @GET("/v1/services/loyalty/summary/%s")
+    @GET("/v1/services/loyalty/summary/{customer_id}")
     Call<ResponseLoyaltySummary> summary(@Path("customer_id") String customer_id);
 
 

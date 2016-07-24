@@ -9,6 +9,7 @@ import io.codemojo.sdk.network.ILoyalty;
 import io.codemojo.sdk.responses.ResponseLoyalty;
 import io.codemojo.sdk.responses.ResponseLoyaltyMaximumRedemption;
 import io.codemojo.sdk.responses.ResponseLoyaltySummary;
+import io.codemojo.sdk.utils.APICodes;
 import retrofit2.Call;
 
 /**
@@ -52,13 +53,16 @@ public class LoyaltyService extends BaseService {
                     final ResponseLoyalty body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 if(notification != null && body.getResult().isTierUpgrade()) {
                                     notification.newTierUpgrade(body.getResult().getTier());
                                 }
@@ -130,13 +134,16 @@ public class LoyaltyService extends BaseService {
                     final ResponseLoyalty body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
@@ -183,13 +190,16 @@ public class LoyaltyService extends BaseService {
                     final ResponseLoyaltyMaximumRedemption body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
@@ -222,13 +232,16 @@ public class LoyaltyService extends BaseService {
                     final ResponseLoyaltySummary body = response.execute().body();
                     if(body != null){
                         switch (body.getCode()) {
-                            case -403:
+                            case APICodes.INVALID_MISSING_FIELDS:
                                 raiseException(new InvalidArgumentsException(body.getMessage()));
                                 break;
-                            case 400:
+                            case APICodes.SERVICE_NOT_SETUP:
                                 raiseException(new SetupIncompleteException(body.getMessage()));
                                 break;
-                            case 200:
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
