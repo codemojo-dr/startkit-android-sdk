@@ -76,16 +76,16 @@
                     android:imeOptions="actionDone"
                     android:maxLines="1" android:hint="Enter referral code"
                     android:id="@+id/promoEnter"
-                    android:layout_width="200dp"
+                    android:layout_width="200dp" android:textSize="12sp"
                     android:layout_height="wrap_content" />
 
                 <ImageButton android:id="@+id/btnProcessPromo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@+id/promoEnter"
-                    android:layout_alignBottom="@+id/promoEnter"
+                    android:layout_centerInParent="true"
                     android:layout_alignRight="@+id/promoEnter"
-                    android:background="@android:drawable/arrow_down_float"/>
+                    android:backgroundTint="#404040" android:scaleType="center"
+                    android:background="@drawable/arrow_go" />
 
             </RelativeLayout>
         </LinearLayout>
