@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 
 import java.io.IOException;
 
-import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.ResourceNotFoundException;
 import io.codemojo.sdk.exceptions.SDKInitializationException;
@@ -62,6 +61,11 @@ public class ReferralService extends BaseService {
                 }
             }
         }).start();
+    }
+
+    public String getSignedUpReferralCode(Context context){
+        final SharedPreferences preferences = context.getSharedPreferences("codemojo",Context.MODE_PRIVATE);
+        return preferences.getString("referrer", null);
     }
 
     /**

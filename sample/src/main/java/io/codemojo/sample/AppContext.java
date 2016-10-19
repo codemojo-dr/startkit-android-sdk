@@ -15,7 +15,7 @@ public class AppContext extends android.app.Application {
         /*
          * Create the main Codemojo Object
          */
-        mojo = new Codemojo(context, "99dd3c74dfbda4c8977743134804c2a04a75f26b", id, true);
+        mojo = new Codemojo(context, "99dd3c74dfbda4c8977743134804c2a04a75f26b", id, false);
     }
 
     /*

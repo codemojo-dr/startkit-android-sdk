@@ -1,20 +1,27 @@
 package io.codemojo.sdk;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
 
 import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
+import io.codemojo.sdk.gcm.RegistrationIntentService;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.services.AuthenticationService;
 import io.codemojo.sdk.services.GamificationService;
 import io.codemojo.sdk.services.LoyaltyService;
+import io.codemojo.sdk.services.MessagingService;
 import io.codemojo.sdk.services.ReferralService;
+import io.codemojo.sdk.services.UserDataSyncService;
 import io.codemojo.sdk.services.WalletService;
 import io.codemojo.sdk.ui.GamificationTransactions;
 import io.codemojo.sdk.ui.ReferralActivity;
+import io.codemojo.sdk.utils.GCMChecker;
 
 /**
  * Created by shoaib on 24/06/16.
@@ -26,14 +33,13 @@ public class Codemojo {
     private WalletService walletService;
     private GamificationService gamificationService;
     private ReferralService referralService;
+    private UserDataSyncService dataSyncService;
+    private static MessagingService messagingService;
 
     private GamificationEarnedEvent gamificationEarnedEvent;
     private LoyaltyEvent loyaltyEvent;
 
     private Context context;
-
-    public Codemojo() {
-    }
 
     /**
      * @param context
@@ -58,6 +64,7 @@ public class Codemojo {
                 authenticationService.setContext((Activity) context);
             }
         } catch (AuthenticationException e) {
+            System.out.println(e);
         }
     }
 
@@ -132,4 +139,37 @@ public class Codemojo {
         }
         return referralService;
     }
+
+    public UserDataSyncService getUserDataSyncService() {
+        return dataSyncService;
+    }
+
+    public static MessagingService getMessagingService(Context context){
+        if(messagingService == null) {
+            messagingService = new MessagingService(context);
+        }
+        return messagingService;
+    }
+
+    public void enableGCM(){
+        if(GCMChecker.checkPlayServices((Activity) context)){
+            Intent gcmRegistration = new Intent(context, RegistrationIntentService.class);
+            context.startService(gcmRegistration);
+            context.bindService(gcmRegistration, serviceConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            RegistrationIntentService.RegistrationBinder service = (RegistrationIntentService.RegistrationBinder) iBinder;
+            service.getService().sendRegistrationToServer(authenticationService);
+            context.unbindService(serviceConnection);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+
+        }
+    };
 }

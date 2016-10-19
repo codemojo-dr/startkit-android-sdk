@@ -9,9 +9,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import io.codemojo.sdk.facades.MessageReceivedHandler;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 
-public class ChooserActivity extends AppCompatActivity implements View.OnClickListener {
+public class ChooserActivity extends AppCompatActivity implements View.OnClickListener, MessageReceivedHandler {
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +35,12 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                      */
                     AppContext.init(ChooserActivity.this, textView.getText().toString());
                     AppContext.getCodemojoClient().getReferralService().useSignupReferral(ChooserActivity.this, null);
+                    AppContext.getCodemojoClient().enableGCM();
+
+                    ((TextView) findViewById(R.id.lblReferralUsed)).setText(
+                            "Referral Code used: " +
+                            AppContext.getCodemojoClient().getReferralService().getSignedUpReferralCode(ChooserActivity.this));
+
                     text.setVisibility(View.GONE);
                     findViewById(R.id.panelDemoChooser).setVisibility(View.VISIBLE);
                 }else{
@@ -43,7 +52,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
 
         findViewById(R.id.btnGamificationAchievements).setOnClickListener(this);
         findViewById(R.id.btnReferral).setOnClickListener(this);
-        findViewById(R.id.btnGamificationBadges).setOnClickListener(this);
+        findViewById(R.id.btnSmartNotifications).setOnClickListener(this);
 
         getSupportActionBar().setTitle("Codemojo Demo");
     }
@@ -67,5 +76,10 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                 startActivity(new Intent(this, GamificationActivity.class));
                 break;
         }
+    }
+
+    @Override
+    public boolean onMessageReceived(Bundle data) {
+        return false;
     }
 }

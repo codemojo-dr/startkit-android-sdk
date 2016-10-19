@@ -1,6 +1,5 @@
 package io.codemojo.sdk.responses;
 
-import io.codemojo.sdk.models.GamificationStatus;
 import io.codemojo.sdk.models.GenericResponse;
 import io.codemojo.sdk.models.PaginatedTransaction;
 import io.codemojo.sdk.models.WalletTransaction;

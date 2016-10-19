@@ -4,6 +4,15 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <permission
+        android:name="io.codemojo.sdk.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="io.codemojo.sdk.permission.C2D_MESSAGE" />
+
+    <!-- Add this meta-data below -->
+    <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_oei5ZA84ZT4hMl1ST0Pt8bmgwAprM3q3" />
+
     <application
         android:name=".AppContext"
         android:allowBackup="true"
@@ -11,9 +20,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity android:name=".GamificationActivity" />
-
         <activity android:name=".AchievementsActivity" />
         <activity android:name=".ChooserActivity">
             <intent-filter>
@@ -22,9 +29,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="io.codemojo.sdk.ui.ReferralActivity" />
+        <activity android:name="io.codemojo.sdk.ui.GamificationTransactions" />
 
-        <activity android:name="io.codemojo.sdk.ui.ReferralActivity"/>
-        <activity android:name="io.codemojo.sdk.ui.GamificationTransactions"/>
+        <service
+            android:name=".GCMMessageReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
 
         <receiver
             android:name="io.codemojo.sdk.receiver.InstallReceiver"
@@ -34,7 +48,18 @@
             </intent-filter>
         </receiver>
 
+        <activity
+            android:name=".SmartNotificationEvents"
+            android:label="@string/app_name" android:launchMode="singleTask">
+            <intent-filter>
+                <data android:scheme="codemojo" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+        </activity>
 
+        <!--<activity android:name=".SmartNotificationEvents"></activity>-->
     </application>
 
 </manifest>

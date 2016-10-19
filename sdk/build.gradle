@@ -8,8 +8,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 4
-        versionName "1.0.3"
+        versionCode 5
+        versionName "1.0.5"
     }
     buildTypes {
         release {
@@ -23,7 +23,7 @@ uploadArchives {
     repositories.mavenDeployer {
         pom.groupId = 'io.codemojo.sdk'
         pom.artifactId = 'sdk'
-        pom.version = '1.0.3'
+        pom.version = '1.0.5'
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file:///Users/shoaib/Desktop/maven")
     }
@@ -55,6 +55,7 @@ dependencies {
     compile 'com.squareup.retrofit2:converter-gson:2.0.2'
     compile 'com.squareup.retrofit2:retrofit:2.1.0'
     compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile "com.google.android.gms:play-services-gcm:9.2.0"
 
     testCompile 'junit:junit:4.12'
 }

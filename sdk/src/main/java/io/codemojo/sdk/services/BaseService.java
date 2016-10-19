@@ -28,6 +28,7 @@ public abstract class BaseService extends UIThread {
 
         OkHttpClient client = new OkHttpClient.Builder()
                 .addInterceptor(new AuthenticationInterceptor(authenticationService.getAccessToken()))
+                .addInterceptor(new LoggingInterceptor())
                 .build();
 
         service = new Retrofit.Builder().baseUrl(Constants.getEndpoint(authenticationService.getEnvironment()))

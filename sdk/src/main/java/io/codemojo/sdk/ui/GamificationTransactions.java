@@ -16,7 +16,6 @@ import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.PaginatedTransaction;
 import io.codemojo.sdk.models.WalletTransaction;
 import io.codemojo.sdk.services.GamificationService;
-import io.codemojo.sdk.services.WalletService;
 
 public class GamificationTransactions extends AppCompatActivity {
 

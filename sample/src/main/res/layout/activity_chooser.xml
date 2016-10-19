@@ -44,9 +44,15 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btnGamificationBadges"
-            android:text="Gamification - Badges"
+            android:id="@+id/btnSmartNotifications"
+            android:text="Smart Notifications"
             android:layout_width="300dp" android:enabled="false"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/lblReferralUsed"
+            android:text="Referral Used for Signup: N/A"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
 

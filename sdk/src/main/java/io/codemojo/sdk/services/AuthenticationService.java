@@ -30,16 +30,16 @@ public class AuthenticationService extends UIThread {
      * @param customer_id Unique ID of the user signed-in
      * @throws AuthenticationException
      */
-    public AuthenticationService(final String app_token, String customer_id, int environment) throws AuthenticationException {
+    public AuthenticationService(final String app_token, final String customer_id, int environment) throws AuthenticationException {
         this.customer_id = customer_id;
         this.environment = environment;
 
         oAuthService = new Retrofit.Builder().baseUrl(Constants.getEndpoint(environment)).addConverterFactory(GsonConverterFactory.create()).build().create(IAccessToken.class);
-        response = oAuthService.getAppSecret(app_token, customer_id);
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    response = oAuthService.getAppSecret(app_token, customer_id);
                     token = response.execute().body();
                 } catch (IOException e) {
                 }
