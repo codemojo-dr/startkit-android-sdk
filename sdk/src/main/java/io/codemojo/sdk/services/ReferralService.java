@@ -64,8 +64,7 @@ public class ReferralService extends BaseService {
     }
 
     public String getSignedUpReferralCode(Context context){
-        final SharedPreferences preferences = context.getSharedPreferences("codemojo",Context.MODE_PRIVATE);
-        return preferences.getString("referrer", null);
+        return context.getSharedPreferences("codemojo",Context.MODE_PRIVATE).getString("referrer", null);
     }
 
     /**

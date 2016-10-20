@@ -5,9 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by shoaib on 24/06/16.
@@ -16,21 +20,11 @@ public class InstallReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
-        String referrerString = extras.getString("referrer");
+        String referrerString = (String) extras.get("referrer");
         SharedPreferences preferences = context.getSharedPreferences("codemojo", Context.MODE_PRIVATE);
-        if(referrerString != null) {
-            // Parse the query string, extracting the relevant data
-            String[] params = referrerString.split("&"); // $NON-NLS-1$
-            Map<String, String> referralParams = new HashMap<String, String>();
 
-            for (String param : params)
-            {
-                String[] pair = param.split("="); // $NON-NLS-1$
-                referralParams.put(pair[0], pair[1]);
-            }
-            if(referralParams.containsKey("referrer")) {
-                referrerString = referralParams.get("referrer");
-            }
+        if(!preferences.contains("referrer") && referrerString != null) {
+            // Parse the query string, extracting the relevant data
             preferences.edit().putString("referrer", referrerString).apply();
         }
     }

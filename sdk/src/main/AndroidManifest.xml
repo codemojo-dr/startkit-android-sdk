@@ -27,7 +27,7 @@
 
         <service
             android:name=".gcm.GCMInstanceIDListenerService"
-            android:exported="false">
+            android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
