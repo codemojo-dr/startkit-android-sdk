@@ -50,9 +50,6 @@ public class ReferralService extends BaseService {
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
-                                        if((boolean) result == true){
-                                            preferences.edit().remove("referral").apply();
-                                        }
                                         callback.available(result);
                                     }
                                 });
@@ -64,7 +61,8 @@ public class ReferralService extends BaseService {
     }
 
     public String getSignedUpReferralCode(Context context){
-        return context.getSharedPreferences("codemojo",Context.MODE_PRIVATE).getString("referrer", null);
+        String referrer = context.getSharedPreferences("codemojo",Context.MODE_PRIVATE).getString("referrer", null);
+        return (referrer != null && !referrer.contains("utm_"))? referrer: null;
     }
 
     /**

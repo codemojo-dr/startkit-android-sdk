@@ -6,11 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -21,11 +18,16 @@ public class InstallReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Bundle extras = intent.getExtras();
         String referrerString = (String) extras.get("referrer");
-        SharedPreferences preferences = context.getSharedPreferences("codemojo", Context.MODE_PRIVATE);
-
-        if(!preferences.contains("referrer") && referrerString != null) {
-            // Parse the query string, extracting the relevant data
-            preferences.edit().putString("referrer", referrerString).apply();
+        if (extras != null) {
+            Set<String> keys = extras.keySet();
+            Iterator<String> it = keys.iterator();
+            while (it.hasNext()) {
+                String key = it.next();
+                Log.e("CM_DD","[" + key + "=" + extras.get(key)+"]");
+            }
         }
+        SharedPreferences preferences = context.getSharedPreferences("codemojo", Context.MODE_PRIVATE);
+        Log.e("CM_REFER_2", referrerString);
+        preferences.edit().putString("referrer", referrerString).apply();
     }
 }
