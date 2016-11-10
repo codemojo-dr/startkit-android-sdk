@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">SDK</string>
+    <string name="app_name">Codemojo</string>
+    <string name="rewards_details_title">Reward Details</string>
+    <string name="rewards_selection_title">Pick a Reward</string>
+    <string name="how_to_redeem">How to redeem?</string>
+    <string name="support">Support</string>
+    <string name="grab_reward">Grab Reward</string>
+    <string name="fine_print">Fine print</string>
 </resources>

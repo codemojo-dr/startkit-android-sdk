@@ -6,6 +6,7 @@
     <permission android:name="io.codemojo.sdk.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
     <uses-permission android:name="io.codemojo.sdk.permission.C2D_MESSAGE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -13,6 +14,8 @@
         android:supportsRtl="true">
         <activity android:name=".ui.GamificationTransactions" />
         <activity android:name=".ui.ReferralActivity" />
+        <activity android:name=".ui.AvailableRewardsActivity" />
+        <activity android:name=".ui.RewardDetailsActivity" />
 
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"

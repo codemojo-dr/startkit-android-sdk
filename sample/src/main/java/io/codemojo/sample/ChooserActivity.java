@@ -1,5 +1,7 @@
 package io.codemojo.sample;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +11,15 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
+import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.facades.MessageReceivedHandler;
+import io.codemojo.sdk.facades.RewardsAvailability;
+import io.codemojo.sdk.models.BrandGrabbedOffer;
+import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.ReferralScreenSettings;
+import io.codemojo.sdk.models.RewardsScreenSettings;
 
 public class ChooserActivity extends AppCompatActivity implements View.OnClickListener, MessageReceivedHandler {
 
@@ -35,11 +44,12 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                      */
                     AppContext.init(ChooserActivity.this, textView.getText().toString());
                     AppContext.getCodemojoClient().getReferralService().useSignupReferral(ChooserActivity.this, null);
+                    AppContext.getCodemojoClient().initRewardsService("a673fca0-91f9-11e6-a2dd-1b943448738e");
                     AppContext.getCodemojoClient().enableGCM();
 
                     ((TextView) findViewById(R.id.lblReferralUsed)).setText(
                             "Referral Code used: " +
-                            AppContext.getCodemojoClient().getReferralService().getSignedUpReferralCode(ChooserActivity.this));
+                                    AppContext.getCodemojoClient().getReferralService().getSignedUpReferralCode(ChooserActivity.this));
 
                     text.setVisibility(View.GONE);
                     findViewById(R.id.panelDemoChooser).setVisibility(View.VISIBLE);
@@ -52,7 +62,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
 
         findViewById(R.id.btnGamificationAchievements).setOnClickListener(this);
         findViewById(R.id.btnReferral).setOnClickListener(this);
-        findViewById(R.id.btnSmartNotifications).setOnClickListener(this);
+        findViewById(R.id.btnRewards).setOnClickListener(this);
 
         getSupportActionBar().setTitle("Codemojo Demo");
     }
@@ -72,10 +82,68 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                 settings.setBanner(R.drawable.sample_invite);
                 AppContext.getCodemojoClient().launchReferralScreen(settings);
                 break;
+
             case R.id.btnGamificationAchievements:
                 startActivity(new Intent(this, GamificationActivity.class));
                 break;
+
+            case R.id.btnRewards:
+                AppContext.getCodemojoClient().getRewardsService().onRewardsAvailable(null, new RewardsAvailability() {
+                    ProgressDialog progressDialog;
+
+                    @Override
+                    public void processing() {
+                        progressDialog = ProgressDialog.show(ChooserActivity.this, "", "One moment please...");
+                        progressDialog.setCancelable(true);
+                    }
+
+                    @Override
+                    public void available(List<BrandReward> rewards) {
+                        progressDialog.dismiss();
+                        RewardsScreenSettings settings = new RewardsScreenSettings();
+                        settings.setAllowGrab(true);
+                        settings.setTesting(true);
+                        settings.setShowBackButtonOnTitleBar(true);
+                        settings.setThemePrimaryColor(R.color.colorPrimary);
+                        settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
+                        settings.setThemeAccentColor(R.color.colorAccent);
+                        settings.setThemeAccentFontColor(R.color.white);
+                        AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
+                    }
+
+                    @Override
+                    public void unavailable() {
+                        progressDialog.dismiss();
+                    }
+                });
+                break;
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == Codemojo.CODEMOJO_REWARD_USER){
+            if(resultCode == Activity.RESULT_OK){
+                BrandGrabbedOffer reward = (BrandGrabbedOffer) data.getSerializableExtra("reward");
+                String communication = data.getStringExtra("communication_channel");
+                Toast.makeText(this, "Coupon code " + reward.getCouponCode() + " for " + communication, Toast.LENGTH_SHORT).show();
+            } else {
+                if(data != null) {
+                    String error = data.getStringExtra("error");
+                    if (error != null && !error.isEmpty()) {
+                        Toast.makeText(this, "Oops! " + error, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+        } else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        setResult(Activity.RESULT_CANCELED);
+        super.onBackPressed();
     }
 
     @Override

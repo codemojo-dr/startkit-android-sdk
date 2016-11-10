@@ -42,6 +42,7 @@ public class AuthenticationService extends UIThread {
                     response = oAuthService.getAppSecret(app_token, customer_id);
                     token = response.execute().body();
                 } catch (IOException e) {
+                    System.out.print(e.getMessage());
                 }
                 synchronizer.release();
             }
@@ -51,6 +52,7 @@ public class AuthenticationService extends UIThread {
             synchronizer.acquire();
             synchronizer = null;
         } catch (InterruptedException e) {
+            System.out.print(e.getMessage());
         }
         if(token == null){
             throw new AuthenticationException("error in authentication");

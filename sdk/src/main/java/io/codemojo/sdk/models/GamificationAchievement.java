@@ -5,6 +5,7 @@ package io.codemojo.sdk.models;
  */
 public class GamificationAchievement {
     private int total;
+    private int points_added;
     private long last_achieved;
     private String label;
     private boolean new_bagde_earned;
@@ -23,5 +24,9 @@ public class GamificationAchievement {
 
     public String getLabel() {
         return label;
+    }
+
+    public int getPointsAdded() {
+        return points_added;
     }
 }

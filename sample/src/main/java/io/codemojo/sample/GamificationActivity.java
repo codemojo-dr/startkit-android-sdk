@@ -67,6 +67,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
         final Intent newBadge = new Intent(this, AchievementsActivity.class);
         newBadge.putExtra("badge", achievementName);
         newBadge.putExtra("label", achievement.getLabel());
+        newBadge.putExtra("points", achievement.getPointsAdded());
         startActivityForResult(newBadge, 0);
     }
 

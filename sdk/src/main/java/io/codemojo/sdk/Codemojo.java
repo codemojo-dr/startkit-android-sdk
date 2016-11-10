@@ -7,18 +7,25 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.gcm.RegistrationIntentService;
+import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.ReferralScreenSettings;
+import io.codemojo.sdk.models.RewardsScreenSettings;
 import io.codemojo.sdk.services.AuthenticationService;
 import io.codemojo.sdk.services.GamificationService;
 import io.codemojo.sdk.services.LoyaltyService;
 import io.codemojo.sdk.services.MessagingService;
 import io.codemojo.sdk.services.ReferralService;
+import io.codemojo.sdk.services.RewardsService;
 import io.codemojo.sdk.services.UserDataSyncService;
 import io.codemojo.sdk.services.WalletService;
+import io.codemojo.sdk.ui.AvailableRewardsActivity;
 import io.codemojo.sdk.ui.GamificationTransactions;
 import io.codemojo.sdk.ui.ReferralActivity;
 import io.codemojo.sdk.utils.GCMChecker;
@@ -28,8 +35,11 @@ import io.codemojo.sdk.utils.GCMChecker;
  */
 public class Codemojo {
 
+    public static final int CODEMOJO_REWARD_USER = 0x1A;
+
     private static AuthenticationService authenticationService;
     private LoyaltyService loyaltyService;
+    private static RewardsService rewardsService;
     private WalletService walletService;
     private GamificationService gamificationService;
     private ReferralService referralService;
@@ -40,6 +50,7 @@ public class Codemojo {
     private LoyaltyEvent loyaltyEvent;
 
     private Context context;
+    private static String appId;
 
     /**
      * @param context
@@ -72,6 +83,14 @@ public class Codemojo {
         return authenticationService;
     }
 
+    public static void setAppId(String appId) {
+        Codemojo.appId = appId;
+    }
+
+    public static String getAppId() {
+        return appId;
+    }
+
     /**
      * @param settings
      */
@@ -84,6 +103,28 @@ public class Codemojo {
     public void launchGamificationTransactionScreen(){
         Intent gamificationTransactionIntent = new Intent(context, GamificationTransactions.class);
         context.startActivity(gamificationTransactionIntent);
+    }
+
+
+    public void launchAvailableRewardsScreen(List<BrandReward> rewardList, RewardsScreenSettings settings, Activity resultPostBack){
+        Intent availableRewardsIntent = new Intent(context, AvailableRewardsActivity.class);
+        if(rewardList != null){
+            availableRewardsIntent.putExtra("rewards_list", new ArrayList<>(rewardList));
+        }
+        availableRewardsIntent.putExtra("settings", settings);
+        if(resultPostBack == null) {
+            context.startActivity(availableRewardsIntent);
+        } else {
+            resultPostBack.startActivityForResult(availableRewardsIntent, CODEMOJO_REWARD_USER);
+        }
+    }
+
+    public void launchAvailableRewardsScreen(RewardsScreenSettings settings){
+        launchAvailableRewardsScreen(null, settings, null);
+    }
+
+    public void launchAvailableRewardsScreen(RewardsScreenSettings settings, Activity resultPostBack){
+        launchAvailableRewardsScreen(null, settings, resultPostBack);
     }
 
     /**
@@ -109,6 +150,7 @@ public class Codemojo {
         }
         return loyaltyService;
     }
+
 
     /**
      * @return
@@ -138,6 +180,18 @@ public class Codemojo {
             referralService = new ReferralService(authenticationService);
         }
         return referralService;
+    }
+
+    public RewardsService initRewardsService(String app_id) {
+        if (rewardsService == null) {
+            rewardsService = new RewardsService(authenticationService, app_id);
+        }
+        Codemojo.setAppId(app_id);
+        return rewardsService;
+    }
+
+    public static RewardsService getRewardsService(){
+        return rewardsService;
     }
 
     public UserDataSyncService getUserDataSyncService() {

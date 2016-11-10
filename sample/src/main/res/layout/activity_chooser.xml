@@ -44,9 +44,9 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/btnSmartNotifications"
-            android:text="Smart Notifications"
-            android:layout_width="300dp" android:enabled="false"
+            android:id="@+id/btnRewards"
+            android:text="Rewards Mojo"
+            android:layout_width="300dp"
             android:layout_height="wrap_content" />
 
         <TextView

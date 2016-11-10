@@ -14,8 +14,10 @@ public class AchievementsActivity extends AppCompatActivity {
 
         ImageView badge = (ImageView) findViewById(R.id.achievementBadge);
         TextView badgeName = (TextView) findViewById(R.id.lblBadgeName);
+        TextView pointsEarned = (TextView) findViewById(R.id.lblPoints);
 
         badgeName.setText(getIntent().getStringExtra("label"));
+        pointsEarned.setText(getIntent().getIntExtra("points", 0) + " points earned");
 
         getSupportActionBar().setTitle("Achievement unlocked");
 

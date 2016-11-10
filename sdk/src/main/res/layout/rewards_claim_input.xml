@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:padding="10dp" android:weightSum="1"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:text="Please enter your Email ID / Mobile number to have the reward delivered"
+        android:textStyle="bold"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <EditText
+        android:id="@+id/txtCommunicationChannel"
+        android:layout_marginTop="8dp" android:textSize="13sp"
+        android:hint="Email or Phone number" android:maxLines="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
