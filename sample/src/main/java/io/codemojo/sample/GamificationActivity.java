@@ -14,6 +14,7 @@ import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.GamificationAchievement;
+import io.codemojo.sdk.models.RewardsScreenSettings;
 import io.codemojo.sdk.models.WalletBalance;
 
 
@@ -64,6 +65,19 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
 
     @Override
     public void newAchievementUnlocked(int totalAchievements, String achievementName, GamificationAchievement achievement) {
+        if(achievementName.equals("start")){
+            RewardsScreenSettings settings = new RewardsScreenSettings();
+            settings.setAllowGrab(true);
+            settings.setTesting(false);
+            settings.setRewardsSelectionPageTitle("You have unlocked an achievement");
+            settings.setShowBackButtonOnTitleBar(true);
+            settings.setThemePrimaryColor(R.color.colorPrimary);
+            settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
+            settings.setThemeAccentColor(R.color.colorAccent);
+            settings.setThemeAccentFontColor(R.color.white);
+            AppContext.getCodemojoClient().launchAvailableRewardsScreen(settings);
+            return;
+        }
         final Intent newBadge = new Intent(this, AchievementsActivity.class);
         newBadge.putExtra("badge", achievementName);
         newBadge.putExtra("label", achievement.getLabel());

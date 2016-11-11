@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:text="Please enter your Email ID / Mobile number to have the reward delivered"
+        android:text="@string/please_enter_communication_channel"
         android:textStyle="bold"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
@@ -13,8 +13,8 @@
     <EditText
         android:id="@+id/txtCommunicationChannel"
         android:layout_marginTop="8dp" android:textSize="13sp"
-        android:hint="Email or Phone number" android:maxLines="1"
-        android:layout_width="match_parent"
+        android:hint="@string/email_or_phone_number" android:maxLines="1"
+        android:layout_width="match_parent" android:imeOptions="actionSend"
         android:layout_height="wrap_content" />
 
 </LinearLayout>

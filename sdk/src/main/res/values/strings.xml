@@ -6,4 +6,6 @@
     <string name="support">Support</string>
     <string name="grab_reward">Grab Reward</string>
     <string name="fine_print">Fine print</string>
+    <string name="please_enter_communication_channel">Please enter your Email ID / Mobile number to have the reward delivered</string>
+    <string name="email_or_phone_number">Email or Phone number</string>
 </resources>

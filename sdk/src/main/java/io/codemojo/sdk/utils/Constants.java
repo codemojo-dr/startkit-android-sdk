@@ -5,7 +5,7 @@ package io.codemojo.sdk.utils;
  */
 public class Constants {
     public final static String ENDPOINT_SANDBOX = "https://sandbox.codemojo.io";
-//    public final static String ENDPOINT_PRODUCTION = "http://lh-drewards-services.192.168.1.214.xip.io:8888";
+//    public final static String ENDPOINT_PRODUCTION = "http://lh-drewards-services.192.168.10.42.xip.io:8888";
     public final static String ENDPOINT_PRODUCTION = "https://production.codemojo.io";
 
     public final static int SANDBOX = 0;

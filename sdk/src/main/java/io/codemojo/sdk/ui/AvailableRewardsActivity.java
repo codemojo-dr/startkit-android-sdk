@@ -11,6 +11,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_gamification_transactions);
+        setContentView(R.layout.activity_available_rewards);
 
         final RewardsService rewardsService = Codemojo.getRewardsService();
 
@@ -40,6 +41,16 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
         listTransactions.setOnItemClickListener(this);
         settings = (RewardsScreenSettings) getIntent().getSerializableExtra("settings");
+
+        if(!settings.getRewardsSelectionPageDescription().isEmpty()){
+            ((TextView) findViewById(R.id.lblDescription)).setText(settings.getRewardsSelectionPageDescription());
+        } else{
+            if(settings.isAllowGrab()) {
+                ((TextView) findViewById(R.id.lblDescription)).setText("Congratulations on your Achievement, Please pick a reward from the available options below");
+            } else {
+                ((TextView) findViewById(R.id.lblDescription)).setText("You can pick any voucher from below on completing your milestone!");
+            }
+        }
 
         if(settings.getThemePrimaryColor() > 0) {
             getSupportActionBar().setBackgroundDrawable(

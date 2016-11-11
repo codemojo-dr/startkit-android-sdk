@@ -5,7 +5,9 @@ import java.io.Serializable;
 public class RewardsScreenSettings implements Serializable {
 
     private String rewardsSelectionPageTitle;
+    private String rewardsSelectionPageDescription;
     private String rewardDetailsPageTitle;
+    private String communicationChannel;
 
     private int themePrimaryColor;
     private int themeSecondaryColor;
@@ -95,5 +97,21 @@ public class RewardsScreenSettings implements Serializable {
 
     public int getThemeAccentFontColor() {
         return themeAccentFontColor;
+    }
+
+    public String getCommunicationChannel() {
+        return communicationChannel == null?"":communicationChannel.trim();
+    }
+
+    public void setCommunicationChannel(String communicationChannel) {
+        this.communicationChannel = communicationChannel;
+    }
+
+    public String getRewardsSelectionPageDescription() {
+        return rewardsSelectionPageDescription == null?"":rewardsSelectionPageDescription.trim();
+    }
+
+    public void setRewardsSelectionPageDescription(String rewardsSelectionPageDescription) {
+        this.rewardsSelectionPageDescription = rewardsSelectionPageDescription;
     }
 }

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -36,6 +38,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
     RewardsService rewardsService;
     private RewardsScreenSettings settings;
+    private BrandReward reward;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +83,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
         rewardsService = new RewardsService(Codemojo.getAuthenticationService(), "5fd7d7a0-908f-11e6-998d-8544c212fea5");
         rewardsService.setErrorHandler(this);
-        final BrandReward reward = (BrandReward) getIntent().getSerializableExtra("reward");
+        reward = (BrandReward) getIntent().getSerializableExtra("reward");
 
         ImageView view = (ImageView) findViewById(R.id.banner);
         Picasso.with(this).load(reward.getLogo()).resize(512,300).onlyScaleDown().centerCrop().into(view);
@@ -98,33 +101,54 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
                 public void onClick(View view) {
                     LayoutInflater inflater = getLayoutInflater();
                     View dialogView = inflater.inflate(R.layout.rewards_claim_input, null);
+
                     final EditText input = (EditText) dialogView.findViewById(R.id.txtCommunicationChannel);
+                    if(!settings.getCommunicationChannel().equals("")){
+                        input.setText(settings.getCommunicationChannel());
+                    }
+
+                    input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                        @Override
+                        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                            claimReward(input);
+                            return false;
+                        }
+                    });
+
                     new AlertDialog.Builder(RewardDetailsActivity.this)
                             .setView(dialogView)
                             .setPositiveButton("Claim Reward", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
-                                    Map<String, String> details = new HashMap<String, String>();
-                                    details.put("communicate", settings.isSendCouponAutomatically()? "1": "0");
-                                    details.put("testing", settings.isTest()? "1": "0");
-                                    final ProgressDialog progressDialog = ProgressDialog.show(RewardDetailsActivity.this, "", "Please wait ...");
-                                    rewardsService.grabReward(reward.getId(), input.getText().toString(), details, new ResponseAvailable() {
-                                        @Override
-                                        public void available(Object result) {
-                                            progressDialog.dismiss();
-                                            BrandGrabbedOffer go = (BrandGrabbedOffer) result;
-                                            Intent data = new Intent();
-                                            data.putExtra("reward", go);
-                                            data.putExtra("communication_channel", input.getText().toString());
-                                            setResult(Activity.RESULT_OK, data);
-                                            finish();
-                                        }
-                                    });
+                                    claimReward(input);
                                 }
                             }).show();
                 }
             });
         }
+    }
+
+    private void claimReward(final EditText input) {
+        if(input.getText().toString().trim().isEmpty() || input.getText().toString().length() <= 5){
+            Toast.makeText(this, "Valid Email ID or Mobile number required to receive the coupon", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Map<String, String> details = new HashMap<String, String>();
+        details.put("communicate", settings.isSendCouponAutomatically()? "1": "0");
+        details.put("testing", settings.isTest()? "1": "0");
+        final ProgressDialog progressDialog = ProgressDialog.show(RewardDetailsActivity.this, "", "Please wait ...");
+        rewardsService.grabReward(reward.getId(), input.getText().toString(), details, new ResponseAvailable() {
+            @Override
+            public void available(Object result) {
+                progressDialog.dismiss();
+                BrandGrabbedOffer go = (BrandGrabbedOffer) result;
+                Intent data = new Intent();
+                data.putExtra("reward", go);
+                data.putExtra("communication_channel", input.getText().toString());
+                setResult(Activity.RESULT_OK, data);
+                finish();
+            }
+        });
     }
 
     @Override

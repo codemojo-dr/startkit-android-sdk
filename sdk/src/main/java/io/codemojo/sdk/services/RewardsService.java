@@ -34,7 +34,7 @@ public class RewardsService extends BaseService {
     private String app_id;
 
     /**
-     * @param authenticationService @description Authentication Service
+     * @param authenticationService
      */
     public RewardsService(AuthenticationService authenticationService, String app_id) {
         super(authenticationService, IRewards.class);
@@ -43,8 +43,8 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param user_communication_id @description User Email or Mobile Number for Communication
-     * @param callback @description Async Callback
+     * @param user_communication_id
+     * @param callback
      */
     public void onRewardsAvailable(String user_communication_id, final RewardsAvailability callback) {
 
@@ -67,9 +67,9 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param user_communication_id @description User Email or Mobile Number for Communication
-     * @param countryCode @description 2 digit Country code
-     * @param callback @description Async Callback
+     * @param user_communication_id
+     * @param countryCode
+     * @param callback
      */
     public void onRewardsAvailable(String user_communication_id, String countryCode, final RewardsAvailability callback) {
 
@@ -89,10 +89,10 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param user_communication_id @description User Email or Mobile Number for Communication
-     * @param lat @description User location
-     * @param lon @description User location
-     * @param callback @description Async Callback
+     * @param user_communication_id
+     * @param lat
+     * @param lon
+     * @param callback
      */
     public void onRewardsAvailable(String user_communication_id, double lat, double lon, final RewardsAvailability callback) {
 
@@ -113,8 +113,8 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param communication_channel @description User Email or Mobile Number for Communication
-     * @param callback @description Async Callback
+     * @param communication_channel
+     * @param callback
      */
     public void getAvailableRewards(String communication_channel, final ResponseAvailable callback) {
 
@@ -128,9 +128,9 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param communication_channel @description User Email or Mobile Number for Communication
-     * @param filters @description Filters
-     * @param callback @description Async Callback
+     * @param communication_channel
+     * @param filters
+     * @param callback
      */
     private void getAvailableRewards(String communication_channel, Map<String, String> filters, final ResponseAvailable callback) {
         if (rewardsService == null) {
@@ -214,9 +214,9 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param reward_id @description Reward ID to be grabbed
-     * @param additional_details @description Additional details
-     * @param callback @description Async Callback
+     * @param reward_id
+     * @param additional_details
+     * @param callback
      */
     public void grabReward(final String reward_id, String communication_channel, Map<String, String> additional_details , final ResponseAvailable callback) {
         if (rewardsService == null){
@@ -299,9 +299,9 @@ public class RewardsService extends BaseService {
     }
 
     /**
-     * @param reward_id @description Reward ID to be grabbed
-     * @param communication_channel @description User Email or Mobile Number for Communication
-     * @param callback @description Async Callback
+     * @param reward_id
+     * @param communication_channel
+     * @param callback
      */
     public void grabReward(final String reward_id, String communication_channel, final ResponseAvailable callback) {
         grabReward(reward_id, communication_channel, null, callback);

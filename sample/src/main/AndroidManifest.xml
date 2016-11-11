@@ -12,9 +12,6 @@
 
     <uses-permission android:name="io.codemojo.sdk.permission.C2D_MESSAGE" />
 
-    <!-- Add this meta-data below -->
-    <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_oei5ZA84ZT4hMl1ST0Pt8bmgwAprM3q3" />
-
     <application
         android:name=".AppContext"
         android:allowBackup="true"

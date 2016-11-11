@@ -102,7 +102,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                         progressDialog.dismiss();
                         RewardsScreenSettings settings = new RewardsScreenSettings();
                         settings.setAllowGrab(true);
-                        settings.setTesting(true);
+                        settings.setTesting(false);
                         settings.setShowBackButtonOnTitleBar(true);
                         settings.setThemePrimaryColor(R.color.colorPrimary);
                         settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
