@@ -49,7 +49,7 @@ public class Codemojo {
     private GamificationEarnedEvent gamificationEarnedEvent;
     private LoyaltyEvent loyaltyEvent;
 
-    private Context context;
+    private Activity context;
     private static String appId;
 
     /**
@@ -57,7 +57,7 @@ public class Codemojo {
      * @param client_token
      * @param logged_in_user_id
      */
-    public Codemojo(Context context, String client_token, String logged_in_user_id) {
+    public Codemojo(Activity context, String client_token, String logged_in_user_id) {
         this(context, client_token, logged_in_user_id, false);
     }
 
@@ -67,12 +67,12 @@ public class Codemojo {
      * @param hashed_user_id
      * @param testing
      */
-    public Codemojo(Context context, String client_token, String hashed_user_id, boolean testing) {
+    public Codemojo(Activity context, String client_token, String hashed_user_id, boolean testing) {
         this.context = context;
         try {
             authenticationService = new AuthenticationService(client_token, hashed_user_id, testing ? 0 : 1);
             if(context instanceof Activity) {
-                authenticationService.setContext((Activity) context);
+                authenticationService.setContext(context);
             }
         } catch (AuthenticationException e) {
             System.out.println(e);
@@ -96,18 +96,21 @@ public class Codemojo {
      */
     public void launchReferralScreen(ReferralScreenSettings settings){
         Intent referralIntent = new Intent(context, ReferralActivity.class);
+        referralIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         referralIntent.putExtra("settings", settings);
         context.startActivity(referralIntent);
     }
 
     public void launchGamificationTransactionScreen(){
         Intent gamificationTransactionIntent = new Intent(context, GamificationTransactions.class);
+        gamificationTransactionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(gamificationTransactionIntent);
     }
 
 
     public void launchAvailableRewardsScreen(List<BrandReward> rewardList, RewardsScreenSettings settings, Activity resultPostBack){
         Intent availableRewardsIntent = new Intent(context, AvailableRewardsActivity.class);
+        availableRewardsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if(rewardList != null){
             availableRewardsIntent.putExtra("rewards_list", new ArrayList<>(rewardList));
         }
@@ -205,11 +208,16 @@ public class Codemojo {
         return messagingService;
     }
 
-    public void enableGCM(){
-        if(GCMChecker.checkPlayServices((Activity) context)){
-            Intent gcmRegistration = new Intent(context, RegistrationIntentService.class);
-            context.startService(gcmRegistration);
-            context.bindService(gcmRegistration, serviceConnection, Context.BIND_AUTO_CREATE);
+    public boolean enableGCM(){
+        if(context instanceof Activity) {
+            if (GCMChecker.checkPlayServices((Activity) context)) {
+                Intent gcmRegistration = new Intent(context, RegistrationIntentService.class);
+                context.startService(gcmRegistration);
+                context.bindService(gcmRegistration, serviceConnection, Context.BIND_AUTO_CREATE);
+            }
+            return true;
+        } else{
+            return false;
         }
     }
 

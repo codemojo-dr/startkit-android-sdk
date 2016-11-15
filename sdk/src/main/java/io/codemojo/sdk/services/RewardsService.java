@@ -1,9 +1,17 @@
 package io.codemojo.sdk.services;
 
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Looper;
+import android.os.Parcel;
+import android.os.RemoteException;
 import android.support.v4.app.ActivityCompat;
 import android.telephony.TelephonyManager;
 
@@ -15,6 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import io.codemojo.sdk.exceptions.InvalidArgumentsException;
 import io.codemojo.sdk.exceptions.SDKInitializationException;
@@ -22,10 +31,12 @@ import io.codemojo.sdk.exceptions.SetupIncompleteException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.facades.RewardsAvailability;
 import io.codemojo.sdk.models.BrandReward;
+import io.codemojo.sdk.models.GenericResponse;
 import io.codemojo.sdk.models.ResponseAvailableRewards;
 import io.codemojo.sdk.models.ResponseRewardGrab;
 import io.codemojo.sdk.network.IRewards;
 import io.codemojo.sdk.utils.APICodes;
+import io.codemojo.sdk.utils.AdvertisingIdClientInfo;
 import retrofit2.Call;
 
 public class RewardsService extends BaseService {
@@ -132,7 +143,7 @@ public class RewardsService extends BaseService {
      * @param filters
      * @param callback
      */
-    private void getAvailableRewards(String communication_channel, Map<String, String> filters, final ResponseAvailable callback) {
+    public void getAvailableRewards(String communication_channel, Map<String, String> filters, final ResponseAvailable callback) {
         if (rewardsService == null) {
             raiseException(new SDKInitializationException());
             return;
@@ -167,13 +178,9 @@ public class RewardsService extends BaseService {
             public void run() {
                 try {
 
-                    try {
-                        String device_id = AdvertisingIdClient.getAdvertisingIdInfo(getContext()).getId();
-                        if (!finalFilters.containsKey("device_id")) {
-                            finalFilters.put("device_id", device_id);
-                        }
-                    } catch (IOException | GooglePlayServicesNotAvailableException | GooglePlayServicesRepairableException e) {
-                        e.printStackTrace();
+                    String device_id = getAdId();
+                    if (device_id != null && !finalFilters.containsKey("device_id")) {
+                        finalFilters.put("device_id", device_id);
                     }
 
                     final Call<ResponseAvailableRewards> response = rewardsService.getAvailableRewards(
@@ -197,6 +204,104 @@ public class RewardsService extends BaseService {
                                     @Override
                                     public void run() {
                                         callback.available(body.getRewards());
+                                    }
+                                });
+                                break;
+                            default:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                        }
+                    }
+                } catch (Exception ignored) {
+                    raiseException(ignored);
+                }
+
+            }
+        }).start();
+    }
+
+    public void isRewardsEnabledForRegion(final String country_code, final ResponseAvailable callback) {
+        if (rewardsService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    final Call<GenericResponse> response = rewardsService.getRegionAvailability(
+                            country_code
+                    );
+
+                    final GenericResponse body = response.execute().body();
+                    if(body != null){
+                        switch (body.getCode()) {
+                            case APICodes.INVALID_MISSING_FIELDS:
+                                raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
+                            case APICodes.SERVICE_NOT_SETUP:
+                                raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
+                            case APICodes.RESOURCE_NOT_FOUND:
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(body.getCode() == APICodes.RESPONSE_SUCCESS);
+                                    }
+                                });
+                                break;
+                            default:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                        }
+                    }
+                } catch (Exception ignored) {
+                    raiseException(ignored);
+                }
+
+            }
+        }).start();
+    }
+
+    public void isRewardsEnabledForRegion(final double latitude, final double longitude, final ResponseAvailable callback) {
+        if (rewardsService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+
+                    final Call<GenericResponse> response = rewardsService.getRegionAvailability(
+                            latitude, longitude
+                    );
+
+                    final GenericResponse body = response.execute().body();
+                    if(body != null){
+                        switch (body.getCode()) {
+                            case APICodes.INVALID_MISSING_FIELDS:
+                                raiseException(new InvalidArgumentsException(body.getMessage()));
+                                break;
+                            case APICodes.SERVICE_NOT_SETUP:
+                                raiseException(new SetupIncompleteException(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_FAILURE:
+                                raiseException(new Exception(body.getMessage()));
+                                break;
+                            case APICodes.RESPONSE_SUCCESS:
+                            case APICodes.RESOURCE_NOT_FOUND:
+                                moveTo(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        callback.available(body.getCode() == APICodes.RESPONSE_SUCCESS);
                                     }
                                 });
                                 break;
@@ -252,13 +357,9 @@ public class RewardsService extends BaseService {
             public void run() {
                 try {
 
-                    try {
-                        String device_id = AdvertisingIdClient.getAdvertisingIdInfo(getContext()).getId();
-                        if (!finalAdditional_details.containsKey("device_id")) {
-                            finalAdditional_details.put("device_id", device_id);
-                        }
-                    } catch (IOException | GooglePlayServicesNotAvailableException | GooglePlayServicesRepairableException e) {
-                        e.printStackTrace();
+                    String device_id = getAdId();
+                    if (device_id != null && !finalAdditional_details.containsKey("device_id")) {
+                        finalAdditional_details.put("device_id", device_id);
                     }
 
                     final Call<ResponseRewardGrab> response = rewardsService.grabReward(
@@ -318,11 +419,44 @@ public class RewardsService extends BaseService {
             Location location = null;
             for (String provider :
                     providers) {
-                location = locationManager.getLastKnownLocation(provider);
+                try {
+                    location = locationManager.getLastKnownLocation(provider);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
                 if(location != null){
                     return location;
                 }
             }
+        }
+        return null;
+    }
+
+    private String getAdId() {
+        try {
+            AdvertisingIdClient.Info info = null;
+            try {
+                info = AdvertisingIdClient.getAdvertisingIdInfo(getContext());
+            } catch (IOException | GooglePlayServicesNotAvailableException | GooglePlayServicesRepairableException ignored) {
+            }
+            if(info == null) {
+                AdvertisingIdClientInfo.AdInfo adInfo = null;
+                try {
+                    adInfo = AdvertisingIdClientInfo.getAdvertisingIdInfo(getContext());
+                    if(adInfo != null){
+                        return adInfo.getId();
+                    }
+                } catch (Exception ignored) {
+                }
+            } else {
+                try {
+                    return info.getId();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception ignored) {
+
         }
         return null;
     }

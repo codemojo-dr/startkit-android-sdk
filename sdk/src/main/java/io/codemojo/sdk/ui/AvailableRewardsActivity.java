@@ -83,7 +83,7 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         }
 
         if(rewardsList == null) {
-            rewardsService.getAvailableRewards(null, new ResponseAvailable() {
+            rewardsService.getAvailableRewards(null, null, new ResponseAvailable() {
                 @Override
                 public void available(Object result) {
                     if (result != null) {
@@ -118,6 +118,7 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         Intent details = new Intent(this, RewardDetailsActivity.class);
         details.putExtra("reward", reward);
         details.putExtra("settings", settings);
+        details.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivityForResult(details, Codemojo.CODEMOJO_REWARD_USER);
     }
 

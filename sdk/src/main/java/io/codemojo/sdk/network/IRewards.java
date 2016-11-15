@@ -3,6 +3,7 @@ package io.codemojo.sdk.network;
 
 import java.util.Map;
 
+import io.codemojo.sdk.models.GenericResponse;
 import io.codemojo.sdk.models.ResponseAvailableRewards;
 import io.codemojo.sdk.models.ResponseRewardGrab;
 import retrofit2.Call;
@@ -19,6 +20,12 @@ import retrofit2.http.QueryMap;
  * Created by shoaib on 22/10/14.
  */
 public interface IRewards {
+
+    @GET("/v1/services/rewards/region/availability")
+    Call<GenericResponse> getRegionAvailability(@Query("lat") double lat, @Query("lon") double lon);
+
+    @GET("/v1/services/rewards/region/availability")
+    Call<GenericResponse> getRegionAvailability(@Query("locale") String country_code);
 
     @GET("/v1/services/rewards/list/available-rewards/{app_id}")
     Call<ResponseAvailableRewards> getAvailableRewards(@Path("app_id") String app_id, @Query("customer_id") String customer_id);

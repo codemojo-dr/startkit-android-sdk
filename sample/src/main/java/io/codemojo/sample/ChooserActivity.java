@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import java.util.List;
 
 import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.facades.MessageReceivedHandler;
+import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.facades.RewardsAvailability;
 import io.codemojo.sdk.models.BrandGrabbedOffer;
 import io.codemojo.sdk.models.BrandReward;
@@ -88,32 +90,41 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case R.id.btnRewards:
-                AppContext.getCodemojoClient().getRewardsService().onRewardsAvailable(null, new RewardsAvailability() {
-                    ProgressDialog progressDialog;
-
+                Codemojo.getRewardsService().isRewardsEnabledForRegion("in", new ResponseAvailable() {
                     @Override
-                    public void processing() {
-                        progressDialog = ProgressDialog.show(ChooserActivity.this, "", "One moment please...");
-                        progressDialog.setCancelable(true);
-                    }
+                    public void available(Object result) {
+                        if((boolean) result){
+                            Codemojo.getRewardsService().onRewardsAvailable(null, new RewardsAvailability() {
+                                ProgressDialog progressDialog;
 
-                    @Override
-                    public void available(List<BrandReward> rewards) {
-                        progressDialog.dismiss();
-                        RewardsScreenSettings settings = new RewardsScreenSettings();
-                        settings.setAllowGrab(true);
-                        settings.setTesting(false);
-                        settings.setShowBackButtonOnTitleBar(true);
-                        settings.setThemePrimaryColor(R.color.colorPrimary);
-                        settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
-                        settings.setThemeAccentColor(R.color.colorAccent);
-                        settings.setThemeAccentFontColor(R.color.white);
-                        AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
-                    }
+                                @Override
+                                public void processing() {
+                                    progressDialog = ProgressDialog.show(ChooserActivity.this, "", "Getting your reward...");
+                                    progressDialog.setCancelable(true);
+                                }
 
-                    @Override
-                    public void unavailable() {
-                        progressDialog.dismiss();
+                                @Override
+                                public void available(List<BrandReward> rewards) {
+                                    progressDialog.dismiss();
+                                    RewardsScreenSettings settings = new RewardsScreenSettings();
+                                    settings.setAllowGrab(true);
+                                    settings.setTesting(false);
+                                    settings.setShowBackButtonOnTitleBar(true);
+                                    settings.setThemePrimaryColor(R.color.colorPrimary);
+                                    settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
+                                    settings.setThemeAccentColor(R.color.colorAccent);
+                                    settings.setThemeAccentFontColor(R.color.white);
+                                    AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
+                                }
+
+                                @Override
+                                public void unavailable() {
+                                    progressDialog.dismiss();
+                                }
+                            });
+                        } else{
+                            Toast.makeText(ChooserActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
                 break;

@@ -1,5 +1,6 @@
 package io.codemojo.sample;
 
+import android.app.Activity;
 import android.content.Context;
 
 import io.codemojo.sdk.Codemojo;
@@ -11,7 +12,7 @@ public class AppContext extends android.app.Application {
 
     private static Codemojo mojo;
 
-    public static void init(Context context, String id) {
+    public static void init(Activity context, String id) {
         /*
          * Create the main Codemojo Object
          */
