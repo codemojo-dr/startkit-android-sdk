@@ -13,7 +13,6 @@ import java.util.List;
 import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
-import io.codemojo.sdk.gcm.RegistrationIntentService;
 import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.models.RewardsScreenSettings;
@@ -28,7 +27,6 @@ import io.codemojo.sdk.services.WalletService;
 import io.codemojo.sdk.ui.AvailableRewardsActivity;
 import io.codemojo.sdk.ui.GamificationTransactions;
 import io.codemojo.sdk.ui.ReferralActivity;
-import io.codemojo.sdk.utils.GCMChecker;
 
 /**
  * Created by shoaib on 24/06/16.
@@ -110,7 +108,6 @@ public class Codemojo {
 
     public void launchAvailableRewardsScreen(List<BrandReward> rewardList, RewardsScreenSettings settings, Activity resultPostBack){
         Intent availableRewardsIntent = new Intent(context, AvailableRewardsActivity.class);
-        availableRewardsIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         if(rewardList != null){
             availableRewardsIntent.putExtra("rewards_list", new ArrayList<>(rewardList));
         }
@@ -208,30 +205,4 @@ public class Codemojo {
         return messagingService;
     }
 
-    public boolean enableGCM(){
-        if(context instanceof Activity) {
-            if (GCMChecker.checkPlayServices((Activity) context)) {
-                Intent gcmRegistration = new Intent(context, RegistrationIntentService.class);
-                context.startService(gcmRegistration);
-                context.bindService(gcmRegistration, serviceConnection, Context.BIND_AUTO_CREATE);
-            }
-            return true;
-        } else{
-            return false;
-        }
-    }
-
-    private ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            RegistrationIntentService.RegistrationBinder service = (RegistrationIntentService.RegistrationBinder) iBinder;
-            service.getService().sendRegistrationToServer(authenticationService);
-            context.unbindService(serviceConnection);
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-
-        }
-    };
 }

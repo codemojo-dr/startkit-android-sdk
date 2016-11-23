@@ -39,6 +39,8 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
     RewardsService rewardsService;
     private RewardsScreenSettings settings;
     private BrandReward reward;
+    private ProgressDialog progressDialog;
+    private AlertDialog builder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +49,24 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
         settings = (RewardsScreenSettings) getIntent().getSerializableExtra("settings");
 
-        if( settings.getThemePrimaryColor() > 0) {
-            getSupportActionBar().setBackgroundDrawable(
-                    getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
-            );
-        }
+        assert getSupportActionBar() != null;
+        if(getSupportActionBar() != null) {
+            if (settings.getThemePrimaryColor() > 0) {
+                getSupportActionBar().setBackgroundDrawable(
+                        getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
+                );
+            }
 
-        getSupportActionBar().setTitle(settings.getRewardDetailsPageTitle().equals("") ?
-                getResources().getString(R.string.rewards_details_title): settings.getRewardDetailsPageTitle());
+            getSupportActionBar().setTitle(settings.getRewardDetailsPageTitle().equals("") ?
+                    getResources().getString(R.string.rewards_details_title) : settings.getRewardDetailsPageTitle());
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(settings.isShowBackButtonOnTitleBar());
+            getSupportActionBar().setDisplayHomeAsUpEnabled(settings.isShowBackButtonOnTitleBar());
 
-        if(settings.getThemePrimaryColor() > 0) {
-            getSupportActionBar().setBackgroundDrawable(
-                    getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
-            );
+            if (settings.getThemePrimaryColor() > 0) {
+                getSupportActionBar().setBackgroundDrawable(
+                        getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
+                );
+            }
         }
 
         if(settings.getThemeSecondaryColor() > 0) {
@@ -81,7 +86,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
             ((Button) findViewById(R.id.btnGrab)).setTextColor(getApplicationContext().getResources().getColor(settings.getThemeAccentFontColor()));
         }
 
-        rewardsService = new RewardsService(Codemojo.getAuthenticationService(), "5fd7d7a0-908f-11e6-998d-8544c212fea5");
+        rewardsService = Codemojo.getRewardsService();
         rewardsService.setErrorHandler(this);
         reward = (BrandReward) getIntent().getSerializableExtra("reward");
 
@@ -115,14 +120,16 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
                         }
                     });
 
-                    new AlertDialog.Builder(RewardDetailsActivity.this)
+                    builder = new AlertDialog.Builder(RewardDetailsActivity.this)
                             .setView(dialogView)
                             .setPositiveButton("Claim Reward", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
+
                                     claimReward(input);
                                 }
-                            }).show();
+                            }).create();
+                    builder.show();
                 }
             });
         }
@@ -136,11 +143,15 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         Map<String, String> details = new HashMap<String, String>();
         details.put("communicate", settings.isSendCouponAutomatically()? "1": "0");
         details.put("testing", settings.isTest()? "1": "0");
-        final ProgressDialog progressDialog = ProgressDialog.show(RewardDetailsActivity.this, "", "Please wait ...");
+        details.put("locale", settings.getLocale());
+        details.put("lat", String.valueOf(settings.getLatitude()));
+        details.put("lon", String.valueOf(settings.getLongitude()));
+        progressDialog = ProgressDialog.show(RewardDetailsActivity.this, "", "Please wait ...");
         rewardsService.grabReward(reward.getId(), input.getText().toString(), details, new ResponseAvailable() {
             @Override
             public void available(Object result) {
-                progressDialog.dismiss();
+                if(progressDialog != null) progressDialog.dismiss();
+                if(builder != null) builder.dismiss();
                 BrandGrabbedOffer go = (BrandGrabbedOffer) result;
                 Intent data = new Intent();
                 data.putExtra("reward", go);
@@ -153,6 +164,9 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
     @Override
     public void onBackPressed() {
+        if(progressDialog != null) progressDialog.dismiss();
+        if(builder != null) builder.dismiss();
+
         setResult(Activity.RESULT_FIRST_USER);
         super.onBackPressed();
     }
@@ -168,10 +182,16 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId() == android.R.id.home){
+            setResult(Activity.RESULT_FIRST_USER);
             finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
-
+    @Override
+    public void finish() {
+        if(progressDialog != null) progressDialog.dismiss();
+        if(builder != null) builder.dismiss();
+        super.finish();
+    }
 }

@@ -3,8 +3,6 @@
     package="io.codemojo.sdk">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <permission android:name="io.codemojo.sdk.permission.C2D_MESSAGE"
-        android:protectionLevel="signature" />
     <uses-permission android:name="io.codemojo.sdk.permission.C2D_MESSAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
@@ -16,30 +14,6 @@
         <activity android:name=".ui.ReferralActivity" />
         <activity android:name=".ui.AvailableRewardsActivity" />
         <activity android:name=".ui.RewardDetailsActivity" />
-
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <category android:name="io.codemojo.sdk.gcm.GCMListenerService" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name=".gcm.GCMInstanceIDListenerService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name=".gcm.RegistrationIntentService"
-            android:exported="false">
-        </service>
 
     </application>
 

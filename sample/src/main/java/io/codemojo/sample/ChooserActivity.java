@@ -12,7 +12,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.facades.MessageReceivedHandler;
@@ -47,7 +49,6 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                     AppContext.init(ChooserActivity.this, textView.getText().toString());
                     AppContext.getCodemojoClient().getReferralService().useSignupReferral(ChooserActivity.this, null);
                     AppContext.getCodemojoClient().initRewardsService("a673fca0-91f9-11e6-a2dd-1b943448738e");
-                    AppContext.getCodemojoClient().enableGCM();
 
                     ((TextView) findViewById(R.id.lblReferralUsed)).setText(
                             "Referral Code used: " +
@@ -94,7 +95,9 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                     @Override
                     public void available(Object result) {
                         if((boolean) result){
-                            Codemojo.getRewardsService().onRewardsAvailable(null, new RewardsAvailability() {
+                            Map<String, String> filters = new HashMap<>();
+                            filters.put("locale", "in");
+                            Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
                                 ProgressDialog progressDialog;
 
                                 @Override
@@ -108,12 +111,13 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                                     progressDialog.dismiss();
                                     RewardsScreenSettings settings = new RewardsScreenSettings();
                                     settings.setAllowGrab(true);
-                                    settings.setTesting(false);
+                                    settings.setTesting(true);
                                     settings.setShowBackButtonOnTitleBar(true);
                                     settings.setThemePrimaryColor(R.color.colorPrimary);
                                     settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
                                     settings.setThemeAccentColor(R.color.colorAccent);
                                     settings.setThemeAccentFontColor(R.color.white);
+                                    settings.setLocale("in");
                                     AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
                                 }
 

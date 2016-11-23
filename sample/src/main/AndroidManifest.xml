@@ -31,14 +31,7 @@
         <activity android:name="io.codemojo.sdk.ui.ReferralActivity" />
         <activity android:name="io.codemojo.sdk.ui.GamificationTransactions" />
         <activity android:name="io.codemojo.sdk.ui.AvailableRewardsActivity" />
-
-        <service
-            android:name=".GCMMessageReceiver"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
+        <activity android:name="io.codemojo.sdk.ui.RewardDetailsActivity" />
 
         <receiver
             android:name="io.codemojo.sdk.receiver.InstallReceiver"

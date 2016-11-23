@@ -58,8 +58,12 @@ public class RewardsService extends BaseService {
      * @param callback
      */
     public void onRewardsAvailable(String user_communication_id, final RewardsAvailability callback) {
+        onRewardsAvailable(user_communication_id, new HashMap<String, String>(), callback);
+    }
 
-        getAvailableRewards(user_communication_id, null, new ResponseAvailable() {
+    public void onRewardsAvailable(String user_communication_id, Map<String, String> filters, final RewardsAvailability callback) {
+
+        getAvailableRewards(user_communication_id, filters, new ResponseAvailable() {
             @Override
             public void available(Object result) {
                 if(callback == null){
@@ -154,9 +158,9 @@ public class RewardsService extends BaseService {
         }
 
         TelephonyManager tm = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
-        String locale = tm.getSimCountryIso();
+        String locale = tm != null ? tm.getSimCountryIso(): "";
 
-        if(!filters.containsKey("locale")) {
+        if(locale != null && !locale.trim().isEmpty() && !filters.containsKey("locale")) {
             filters.put("locale", locale);
         }
 

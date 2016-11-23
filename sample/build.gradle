@@ -8,8 +8,8 @@ android {
         applicationId "io.codemojo.sample"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 23
-        versionName "1.0.130"
+        versionCode 24
+        versionName "1.0.131"
     }
     buildTypes {
         release {
