@@ -15,3 +15,6 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-keep class io.codemojo.sdk.models.** { *; }
+-keep class io.codemojo.sdk.responses.** { *; }

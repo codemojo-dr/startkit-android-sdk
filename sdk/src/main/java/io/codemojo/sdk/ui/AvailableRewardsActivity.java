@@ -2,13 +2,11 @@ package io.codemojo.sdk.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,6 +33,13 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        settings = (RewardsScreenSettings) getIntent().getSerializableExtra("settings");
+
+        if(settings.shouldAnimateScreenLoad()) {
+            overridePendingTransition(R.anim.up_from_bottom, 0);
+        }
+
         setContentView(R.layout.activity_available_rewards);
 
         final RewardsService rewardsService = Codemojo.getRewardsService();
@@ -42,40 +47,35 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         listTransactions = (ListView) findViewById(R.id.lstTransactions);
 
         listTransactions.setOnItemClickListener(this);
-        settings = (RewardsScreenSettings) getIntent().getSerializableExtra("settings");
 
-        if(!settings.getRewardsSelectionPageDescription().isEmpty()){
-            ((TextView) findViewById(R.id.lblDescription)).setText(settings.getRewardsSelectionPageDescription());
-        } else{
-            if(settings.isAllowGrab()) {
-                ((TextView) findViewById(R.id.lblDescription)).setText("Congratulations on your Achievement, Please pick a reward from the available options below");
+        TextView description = ((TextView) findViewById(R.id.lblDescription));
+        if(settings.getRewardsSelectionPageTitle() == null) {
+            description.setVisibility(View.GONE);
+        } else {
+            if (!settings.getRewardsSelectionPageTitle().isEmpty()) {
+                description.setText(settings.getRewardsSelectionPageTitle());
             } else {
-                ((TextView) findViewById(R.id.lblDescription)).setText("You can pick any voucher from below on completing your milestone!");
+                if (settings.isAllowGrab()) {
+                    description.setText("Congratulations! Please pick a reward");
+                } else {
+                    description.setText("Unlock these on completing your milestone!");
+                }
             }
         }
 
-        if(settings.getThemePrimaryColor() > 0) {
-            getSupportActionBar().setBackgroundDrawable(
-                    getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
-            );
+        if(settings.getThemeTitleColor() > 0){
+            description.setTextColor(getApplicationContext().getResources().getColor(settings.getThemeTitleColor()));
         }
 
-        if(settings.getThemeSecondaryColor() > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = getWindow();
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getApplicationContext().getResources().getColor(settings.getThemeSecondaryColor()));
-            }
+        if(settings.getThemeTitleStripeColor() > 0){
+            description.setBackgroundColor(getApplicationContext().getResources().getColor(settings.getThemeTitleStripeColor()));
         }
 
-        // Title
-        getSupportActionBar().setTitle(settings.getRewardsSelectionPageTitle().equals("") ?
-                getResources().getString(R.string.rewards_selection_title): settings.getRewardsSelectionPageTitle());
-
-        // Back button
-        getSupportActionBar().setDisplayHomeAsUpEnabled(settings.isShowBackButtonOnTitleBar());
-
+        try {
+            if(getSupportActionBar() != null) getSupportActionBar().hide();
+        } catch (Exception e) {
+            Log.e("Log", e.getMessage());
+        }
 
         ArrayList<BrandReward> rewardsList = null;
 
@@ -139,5 +139,13 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        if(settings.shouldAnimateScreenLoad()) {
+            overridePendingTransition(0, R.anim.hide_from_top);
+        }
     }
 }

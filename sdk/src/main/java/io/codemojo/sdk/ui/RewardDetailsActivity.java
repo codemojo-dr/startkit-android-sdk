@@ -2,9 +2,9 @@ package io.codemojo.sdk.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -12,8 +12,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -45,41 +45,23 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_reward_details);
 
         settings = (RewardsScreenSettings) getIntent().getSerializableExtra("settings");
 
+        if(settings.shouldAnimateScreenLoad()){
+            overridePendingTransition(R.anim.up_from_bottom, 0);
+        }
+
+        setContentView(R.layout.activity_reward_details);
+
         assert getSupportActionBar() != null;
-        if(getSupportActionBar() != null) {
-            if (settings.getThemePrimaryColor() > 0) {
-                getSupportActionBar().setBackgroundDrawable(
-                        getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
-                );
-            }
-
-            getSupportActionBar().setTitle(settings.getRewardDetailsPageTitle().equals("") ?
-                    getResources().getString(R.string.rewards_details_title) : settings.getRewardDetailsPageTitle());
-
-            getSupportActionBar().setDisplayHomeAsUpEnabled(settings.isShowBackButtonOnTitleBar());
-
-            if (settings.getThemePrimaryColor() > 0) {
-                getSupportActionBar().setBackgroundDrawable(
-                        getApplicationContext().getResources().getDrawable(settings.getThemePrimaryColor())
-                );
-            }
+        try {
+            if(getSupportActionBar() != null) getSupportActionBar().hide();
+        } catch (Exception ignored) {
         }
 
-        if(settings.getThemeSecondaryColor() > 0) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = getWindow();
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                window.setStatusBarColor(getApplicationContext().getResources().getColor(settings.getThemeSecondaryColor()));
-            }
-        }
-
-        if(settings.getThemeAccentColor() > 0) {
-            findViewById(R.id.btnGrab).setBackgroundDrawable(getApplicationContext().getResources().getDrawable(settings.getThemeAccentColor()));
+        if(settings.getThemeButtonColor() > 0) {
+            findViewById(R.id.btnGrab).setBackgroundDrawable(getApplicationContext().getResources().getDrawable(settings.getThemeButtonColor()));
         }
 
         if(settings.getThemeAccentFontColor() > 0) {
@@ -91,7 +73,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         reward = (BrandReward) getIntent().getSerializableExtra("reward");
 
         ImageView view = (ImageView) findViewById(R.id.banner);
-        Picasso.with(this).load(reward.getLogo()).resize(512,300).onlyScaleDown().centerCrop().into(view);
+        Picasso.with(this).load(reward.getLogo()).into(view);
 
         ((TextView) findViewById(R.id.lblTitle)).setText(reward.getOffer());
         ((TextView) findViewById(R.id.lblFinePrint)).setText(reward.getFineprint());
@@ -110,6 +92,10 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
                     final EditText input = (EditText) dialogView.findViewById(R.id.txtCommunicationChannel);
                     if(!settings.getCommunicationChannel().equals("")){
                         input.setText(settings.getCommunicationChannel());
+                        if(!settings.shouldWaitForUserInput()){
+                            claimReward(input);
+                            return;
+                        }
                     }
 
                     input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
@@ -140,6 +126,17 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
             Toast.makeText(this, "Valid Email ID or Mobile number required to receive the coupon", Toast.LENGTH_SHORT).show();
             return;
         }
+
+        if(getWindow() != null) {
+            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+        }
+
+        View view = RewardDetailsActivity.this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+
         Map<String, String> details = new HashMap<String, String>();
         details.put("communicate", settings.isSendCouponAutomatically()? "1": "0");
         details.put("testing", settings.isTest()? "1": "0");
@@ -193,5 +190,8 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         if(progressDialog != null) progressDialog.dismiss();
         if(builder != null) builder.dismiss();
         super.finish();
+        if(settings.shouldAnimateScreenLoad()) {
+            overridePendingTransition(0, R.anim.hide_from_top);
+        }
     }
 }

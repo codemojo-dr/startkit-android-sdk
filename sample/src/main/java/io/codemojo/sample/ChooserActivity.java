@@ -2,12 +2,14 @@ package io.codemojo.sample;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -42,6 +44,15 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 if(!textView.getText().toString().trim().equals("")){
+
+                    if(getWindow() != null) {
+                        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+                        View view = ChooserActivity.this.getCurrentFocus();
+                        if (view != null) {
+                            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        }
+                    }
 
                     /*
                      * Initialize the Objects
@@ -91,44 +102,36 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                 break;
 
             case R.id.btnRewards:
-                Codemojo.getRewardsService().isRewardsEnabledForRegion("in", new ResponseAvailable() {
+                Map<String, String> filters = new HashMap<>();
+                filters.put("locale", "in");
+                Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
+                    ProgressDialog progressDialog;
+
                     @Override
-                    public void available(Object result) {
-                        if((boolean) result){
-                            Map<String, String> filters = new HashMap<>();
-                            filters.put("locale", "in");
-                            Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
-                                ProgressDialog progressDialog;
+                    public void processing() {
+                        progressDialog = ProgressDialog.show(ChooserActivity.this, "", "Getting your reward...");
+                        progressDialog.setCancelable(true);
+                    }
 
-                                @Override
-                                public void processing() {
-                                    progressDialog = ProgressDialog.show(ChooserActivity.this, "", "Getting your reward...");
-                                    progressDialog.setCancelable(true);
-                                }
+                    @Override
+                    public void available(List<BrandReward> rewards) {
+                        progressDialog.dismiss();
+                        RewardsScreenSettings settings = new RewardsScreenSettings();
+                        settings.setAllowGrab(true);
+                        settings.setWaitForUserInput(false);
+                        settings.setTesting(true);
+                        settings.setThemeTitleColor(R.color.white);
+                        settings.setThemeButtonColor(R.color.colorAccent);
+                        settings.setThemeTitleStripeColor(R.color.colorPrimaryDark);
+                        settings.setThemeAccentFontColor(R.color.white);
+                        settings.setLocale("in");
+                        AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
+                    }
 
-                                @Override
-                                public void available(List<BrandReward> rewards) {
-                                    progressDialog.dismiss();
-                                    RewardsScreenSettings settings = new RewardsScreenSettings();
-                                    settings.setAllowGrab(true);
-                                    settings.setTesting(true);
-                                    settings.setShowBackButtonOnTitleBar(true);
-                                    settings.setThemePrimaryColor(R.color.colorPrimary);
-                                    settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
-                                    settings.setThemeAccentColor(R.color.colorAccent);
-                                    settings.setThemeAccentFontColor(R.color.white);
-                                    settings.setLocale("in");
-                                    AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
-                                }
-
-                                @Override
-                                public void unavailable() {
-                                    progressDialog.dismiss();
-                                }
-                            });
-                        } else{
-                            Toast.makeText(ChooserActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
-                        }
+                    @Override
+                    public void unavailable() {
+                        Toast.makeText(ChooserActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
+                        progressDialog.dismiss();
                     }
                 });
                 break;

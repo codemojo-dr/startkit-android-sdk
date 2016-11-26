@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="io.codemojo.sdk">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
@@ -12,8 +13,8 @@
         android:supportsRtl="true">
         <activity android:name=".ui.GamificationTransactions" />
         <activity android:name=".ui.ReferralActivity" />
-        <activity android:name=".ui.AvailableRewardsActivity" />
-        <activity android:name=".ui.RewardDetailsActivity" />
+        <activity android:name=".ui.AvailableRewardsActivity" android:theme="@style/TranslucentTheme" />
+        <activity android:name=".ui.RewardDetailsActivity" android:theme="@style/TranslucentTheme" />
 
     </application>
 

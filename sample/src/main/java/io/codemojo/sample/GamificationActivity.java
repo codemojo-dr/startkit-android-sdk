@@ -1,5 +1,6 @@
 package io.codemojo.sample;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -7,12 +8,17 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.facades.CodemojoException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
 import io.codemojo.sdk.facades.ResponseAvailable;
+import io.codemojo.sdk.facades.RewardsAvailability;
+import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.GamificationAchievement;
 import io.codemojo.sdk.models.RewardsScreenSettings;
 import io.codemojo.sdk.models.WalletBalance;
@@ -64,25 +70,53 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     }
 
     @Override
-    public void newAchievementUnlocked(int totalAchievements, String achievementName, GamificationAchievement achievement) {
-        if(achievementName.equals("start")){
-            RewardsScreenSettings settings = new RewardsScreenSettings();
-            settings.setAllowGrab(true);
-            settings.setTesting(false);
-            settings.setRewardsSelectionPageTitle("You have unlocked an achievement");
-            settings.setShowBackButtonOnTitleBar(true);
-            settings.setThemePrimaryColor(R.color.colorPrimary);
-            settings.setThemeSecondaryColor(R.color.colorPrimaryDark);
-            settings.setThemeAccentColor(R.color.colorAccent);
-            settings.setThemeAccentFontColor(R.color.white);
-            AppContext.getCodemojoClient().launchAvailableRewardsScreen(settings);
-            return;
-        }
-        final Intent newBadge = new Intent(this, AchievementsActivity.class);
-        newBadge.putExtra("badge", achievementName);
-        newBadge.putExtra("label", achievement.getLabel());
-        newBadge.putExtra("points", achievement.getPointsAdded());
-        startActivityForResult(newBadge, 0);
+    public void newAchievementUnlocked(int totalAchievements, final String achievementName, GamificationAchievement achievement) {
+        /*
+         * Trigger the reward
+         */
+        Map<String, String> filters = new HashMap<>();
+        filters.put("locale", "in");
+        Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
+            ProgressDialog progressDialog;
+
+            @Override
+            public void processing() {
+                progressDialog = ProgressDialog.show(GamificationActivity.this, "", "Getting your reward...");
+                progressDialog.setCancelable(true);
+            }
+
+            @Override
+            public void available(List<BrandReward> rewards) {
+                progressDialog.dismiss();
+                RewardsScreenSettings settings = new RewardsScreenSettings();
+                settings.setAllowGrab(true);
+                settings.setTesting(true);
+                settings.setAnimateScreenLoad(true);
+                settings.setRewardsSelectionPageTitle("Congratulations, you have unlocked " + achievementName.toUpperCase() + "\n"
+                        + "Please treat yourself with a reward");
+                settings.setThemeTitleStripeColor(R.color.colorAccent);
+                settings.setThemeButtonColor(R.color.colorAccent);
+                settings.setThemeAccentFontColor(R.color.white);
+                AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, GamificationActivity.this);
+            }
+
+            @Override
+            public void unavailable() {
+                Toast.makeText(GamificationActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
+            }
+        });
+
+        /*
+         * Alternatively you can do any other stuff
+
+                final Intent newBadge = new Intent(this, AchievementsActivity.class);
+                newBadge.putExtra("badge", achievementName);
+                newBadge.putExtra("label", achievement.getLabel());
+                newBadge.putExtra("points", achievement.getPointsAdded());
+                startActivityForResult(newBadge, 0);
+
+         */
     }
 
     @Override

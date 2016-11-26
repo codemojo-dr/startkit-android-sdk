@@ -15,3 +15,10 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+-dontwarn java.nio.**
+-dontwarn java.lang.**
+-dontwarn org.codehaus.**
+
+-keep class io.codemojo.sdk.models.** { *; }
+-keep class io.codemojo.sdk.responses.** { *; }

@@ -26,10 +26,15 @@ public abstract class BaseService extends UIThread {
         setContext(authenticationService.getContext());
         this.customer_id = authenticationService.getCustomerId();
 
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(new AuthenticationInterceptor(authenticationService.getAccessToken()))
-                .addInterceptor(new LoggingInterceptor())
-                .build();
+
+        OkHttpClient.Builder httpClient = new OkHttpClient.Builder()
+                .addInterceptor(new AuthenticationInterceptor(authenticationService.getAccessToken()));
+
+        if(authenticationService.getEnvironment() == Constants.SANDBOX){
+            httpClient.addInterceptor(new LoggingInterceptor());
+        }
+
+        OkHttpClient client = httpClient.build();
 
         service = new Retrofit.Builder().baseUrl(Constants.getEndpoint(authenticationService.getEnvironment()))
                 .addConverterFactory(GsonConverterFactory.create())

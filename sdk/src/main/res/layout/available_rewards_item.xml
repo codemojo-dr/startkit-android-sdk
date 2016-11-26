@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
-    android:paddingLeft="10dp" android:paddingTop="10dp" android:weightSum="1"
+    android:paddingTop="10dp" android:paddingBottom="10dp" android:weightSum="1"
     android:layout_height="match_parent">
 
     <ImageView
         android:layout_weight="0.2" android:maxHeight="80dp"
         android:id="@+id/imageBrandLogo" android:scaleType="fitCenter"
-        android:layout_gravity="top" android:gravity="center_vertical"
+        android:layout_gravity="top" android:gravity="center_vertical|left"
         android:layout_width="100dp" android:layout_height="50dp" />
 
     <TextView

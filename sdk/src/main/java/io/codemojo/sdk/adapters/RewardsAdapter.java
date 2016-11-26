@@ -1,6 +1,8 @@
 package io.codemojo.sdk.adapters;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.net.URL;
 import java.util.List;
 
 import io.codemojo.sdk.R;
@@ -32,6 +35,7 @@ public class RewardsAdapter extends ArrayAdapter<BrandReward> {
     public View getView(int position, View convertView, ViewGroup parent) {
 
         View v = convertView;
+        final BrandReward p = getItem(position);
 
         if (v == null) {
             LayoutInflater vi;
@@ -39,7 +43,6 @@ public class RewardsAdapter extends ArrayAdapter<BrandReward> {
             v = vi.inflate(R.layout.available_rewards_item, null);
         }
 
-        BrandReward p = getItem(position);
 
         if (p != null) {
             TextView description = (TextView) v.findViewById(R.id.rewardTitle);

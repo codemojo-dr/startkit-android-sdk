@@ -63,6 +63,8 @@ public class RewardsService extends BaseService {
 
     public void onRewardsAvailable(String user_communication_id, Map<String, String> filters, final RewardsAvailability callback) {
 
+        callback.processing();
+
         getAvailableRewards(user_communication_id, filters, new ResponseAvailable() {
             @Override
             public void available(Object result) {
@@ -76,8 +78,6 @@ public class RewardsService extends BaseService {
                 }
             }
         });
-
-        callback.processing();
 
     }
 

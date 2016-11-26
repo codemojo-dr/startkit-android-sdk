@@ -65,12 +65,12 @@ public class GamificationService extends BaseService {
                                 raiseException(new Exception(body.getMessage()));
                                 break;
                             case APICodes.RESPONSE_SUCCESS:
-                                if(notification != null && body.getGamificationStatus().isBadgeUpgrade()) {
-                                    notification.newBadgeUnlocked(body.getGamificationStatus().getCurrentPoints(), body.getGamificationStatus().getBadge());
-                                }
                                 moveTo(new Runnable() {
                                     @Override
                                     public void run() {
+                                        if(notification != null && body.getGamificationStatus().isBadgeUpgrade()) {
+                                            notification.newBadgeUnlocked(body.getGamificationStatus().getCurrentPoints(), body.getGamificationStatus().getBadge());
+                                        }
                                         callback.available(body.getGamificationStatus());
                                     }
                                 });
@@ -130,13 +130,18 @@ public class GamificationService extends BaseService {
                                     });
                                 }
                                 if(notification != null) {
-                                    for (String achievement : body.getAchievements().keySet()) {
-                                        if (body.getAchievements().get(achievement).isNewBagdeEarned()) {
-                                            notification.newAchievementUnlocked(body.getAchievements().get(achievement).getTotal(), achievement, body.getAchievements().get(achievement));
+                                    moveTo(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            for (String achievement : body.getAchievements().keySet()) {
+                                                if (body.getAchievements().get(achievement).isNewBagdeEarned()) {
+                                                    notification.newAchievementUnlocked(body.getAchievements().get(achievement).getTotal(), achievement, body.getAchievements().get(achievement));
+                                                }
+                                            }
+                                            notification.updatedAchievemenstAvailable(body.getAchievements());
                                         }
-                                    }
+                                    });
                                 }
-                                notification.updatedAchievemenstAvailable(body.getAchievements());
                                 break;
                             default:
                                 if(callback != null){

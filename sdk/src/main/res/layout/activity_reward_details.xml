@@ -2,92 +2,90 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="@dimen/activity_horizontal_margin"
+    android:background="@color/translucent_black_light"
     tools:context="io.codemojo.sdk.ui.RewardDetailsActivity">
 
-
-    <RelativeLayout
-        android:id="@+id/layoutImage"
+    <LinearLayout
+        android:background="#FAFFFFFF" android:layout_margin="@dimen/activity_horizontal_margin"
+        android:padding="@dimen/activity_horizontal_margin"
+        android:orientation="vertical" android:layout_centerInParent="true"
         android:layout_width="match_parent"
-        android:layout_height="150dp">
-
-        <ImageView
-            android:layout_alignParentTop="true"
-            android:id="@+id/banner" android:scaleType="fitXY"
-            android:background="#eaeaea" android:layout_gravity="center"
-            android:layout_width="match_parent"
-            android:layout_height="150dp" />
-
-        <FrameLayout
-            android:background="#A0000000"
-            android:layout_alignParentTop="true"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        android:layout_height="wrap_content">
 
         <LinearLayout
-            android:layout_marginLeft="20dp" android:background="#FAfAFA"
-            android:layout_marginRight="20dp" android:padding="5dp"
-            android:layout_alignParentBottom="true"
+            android:weightSum="1"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_marginRight="10dp"
+                android:layout_weight="0.7" android:src="@drawable/icon"
+                android:id="@+id/banner" android:scaleType="centerInside"
+                android:layout_gravity="center" android:minWidth="50dp"
+                android:layout_height="50dp" android:layout_width="match_parent" />
+
             <TextView
-                android:gravity="center" android:textStyle="bold"
+                android:layout_weight=".3" android:gravity="left" android:textStyle="bold"
                 android:id="@+id/lblTitle" android:layout_marginTop="10dp"
                 android:layout_width="match_parent" android:textSize="18sp"
                 android:layout_height="wrap_content" />
+
         </LinearLayout>
 
-    </RelativeLayout>
-
-
-    <ScrollView
-        android:layout_below="@+id/layoutImage" android:id="@+id/scrollContainer"
-        android:layout_marginBottom="60dp" android:padding="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <LinearLayout
-            android:orientation="vertical"
+        <ScrollView
+            android:layout_below="@+id/layoutImage" android:id="@+id/scrollContainer"
+            android:layout_marginBottom="60dp" android:padding="10dp"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <TextView
-                android:layout_marginTop="20dp" android:padding="0dp"
-                android:text="@string/fine_print" android:textStyle="bold"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/lblFinePrint" android:layout_marginTop="10dp"
-                android:layout_width="match_parent" android:textColor="#707070"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="20dp" android:padding="0dp"
+                    android:text="@string/fine_print" android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:layout_marginTop="20dp" android:padding="0dp"
-                android:text="@string/how_to_redeem" android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/lblFinePrint" android:layout_marginTop="10dp"
+                    android:layout_width="match_parent" android:textColor="#707070"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:textColor="#707070"
-                android:layout_marginTop="10dp" android:background="#eaeaea"
-                android:id="@+id/lblRedeemProcedure" android:padding="10dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="20dp" android:padding="0dp"
+                    android:text="@string/how_to_redeem" android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:layout_marginTop="10dp" android:padding="0dp"
-                android:text="@string/support" android:textStyle="bold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                <TextView
+                    android:textColor="#707070"
+                    android:layout_marginTop="10dp" android:background="#eaeaea"
+                    android:id="@+id/lblRedeemProcedure" android:padding="10dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
 
-            <TextView
-                android:layout_marginTop="10dp" android:textColor="#707070"
-                android:id="@+id/lblSupport" android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
-    </ScrollView>
-    <Button
-        android:text="@string/grab_reward" android:layout_marginTop="-50dp"
-        android:layout_alignParentBottom="true" android:id="@+id/btnGrab"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+                <TextView
+                    android:layout_marginTop="10dp" android:padding="0dp"
+                    android:text="@string/support" android:textStyle="bold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:layout_marginTop="10dp" android:textColor="#707070"
+                    android:id="@+id/lblSupport" android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+        </ScrollView>
+
+        <Button
+            android:text="@string/grab_reward" android:layout_marginTop="-50dp"
+            android:id="@+id/btnGrab"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </RelativeLayout>

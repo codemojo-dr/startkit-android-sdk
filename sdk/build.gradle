@@ -23,7 +23,7 @@ uploadArchives {
     repositories.mavenDeployer {
         pom.groupId = 'io.codemojo.sdk'
         pom.artifactId = 'sdk'
-        pom.version = '1.0.561'
+        pom.version = '1.0.571'
         // Add other pom properties here if you want (developer details / licenses)
         repository(url: "file:///Users/shoaib/Desktop/maven")
     }
