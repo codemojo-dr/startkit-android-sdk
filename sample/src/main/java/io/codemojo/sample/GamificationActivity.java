@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,9 +52,12 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
             AppContext.getCodemojoClient().getWalletService().getWalletBalance(new ResponseAvailable() {
                 @Override
                 public void available(Object balance) {
-                    ((TextView) findViewById(R.id.lblWalletBalance)).setText(
-                            (int) ((WalletBalance) balance).getSlot3().getRawPoints() + " pts = $"
-                    + ((WalletBalance) balance).getSlot3().getConvertedPoints());
+                    try {
+                        ((TextView) findViewById(R.id.lblWalletBalance)).setText(
+                                (int) ((WalletBalance) balance).getSlot3().getRawPoints() + " pts = $"
+                        + ((WalletBalance) balance).getSlot3().getConvertedPoints());
+                    } catch (Exception ignored) {
+                    }
                 }
             });
         }
@@ -62,11 +66,12 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
 
     @Override
     public void newTierUpgrade(String tierName) {
-
+        Log.e("gam_tier", tierName);
     }
 
     @Override
     public void newBadgeUnlocked(int totalPoints, String badgeName) {
+        Log.e("gam_badge", badgeName);
     }
 
     @Override
@@ -76,37 +81,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
          */
         Map<String, String> filters = new HashMap<>();
         filters.put("locale", "in");
-        Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
-            ProgressDialog progressDialog;
-
-            @Override
-            public void processing() {
-                progressDialog = ProgressDialog.show(GamificationActivity.this, "", "Getting your reward...");
-                progressDialog.setCancelable(true);
-            }
-
-            @Override
-            public void available(List<BrandReward> rewards) {
-                progressDialog.dismiss();
-                RewardsScreenSettings settings = new RewardsScreenSettings();
-                settings.setAllowGrab(true);
-                settings.setTesting(true);
-                settings.setAnimateScreenLoad(true);
-                settings.setRewardsSelectionPageTitle("Congratulations, you have unlocked " + achievementName.toUpperCase() + "\n"
-                        + "Please treat yourself with a reward");
-                settings.setThemeTitleStripeColor(R.color.colorAccent);
-                settings.setThemeButtonColor(R.color.colorAccent);
-                settings.setThemeAccentFontColor(R.color.white);
-                AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, GamificationActivity.this);
-            }
-
-            @Override
-            public void unavailable() {
-                Toast.makeText(GamificationActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
-                progressDialog.dismiss();
-            }
-        });
-
+        Log.e("gam_achivement", achievementName);
         /*
          * Alternatively you can do any other stuff
 
@@ -121,14 +96,14 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
 
     @Override
     public void updatedAchievemenstAvailable(Map<String, GamificationAchievement> achievements) {
-
+        Log.e("gam_new", "something");
     }
 
     @Override
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnUno:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("uno", null);
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("facebook-post", null);
                 break;
             case R.id.btnStart:
                 AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("start", null);

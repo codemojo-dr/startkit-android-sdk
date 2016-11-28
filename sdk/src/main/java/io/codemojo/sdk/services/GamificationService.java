@@ -134,6 +134,9 @@ public class GamificationService extends BaseService {
                                         @Override
                                         public void run() {
                                             for (String achievement : body.getAchievements().keySet()) {
+                                                if(body.getBadges() != null && body.getBadges().isBadgeUpgrade()){
+                                                    notification.newBadgeUnlocked(body.getTotalPoints(), body.getBadges().getBadge());
+                                                }
                                                 if (body.getAchievements().get(achievement).isNewBagdeEarned()) {
                                                     notification.newAchievementUnlocked(body.getAchievements().get(achievement).getTotal(), achievement, body.getAchievements().get(achievement));
                                                 }

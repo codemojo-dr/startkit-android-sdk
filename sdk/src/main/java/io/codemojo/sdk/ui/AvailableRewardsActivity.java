@@ -86,9 +86,10 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
         if(rewardsList == null) {
             Map<String, String> filters = new HashMap<>();
-            filters.put("locale", settings.getLocale());
-            filters.put("lat", String.valueOf(settings.getLatitude()));
-            filters.put("lon", String.valueOf(settings.getLongitude()));
+            if(settings.getLocale() != null) filters.put("locale", settings.getLocale());
+            if(settings.getLatitude() != 0) filters.put("lat", String.valueOf(settings.getLatitude()));
+            if(settings.getLongitude() != 0) filters.put("lon", String.valueOf(settings.getLongitude()));
+            if(!settings.getCommunicationChannel().isEmpty()) filters.put("email", settings.getCommunicationChannel());
             rewardsService.getAvailableRewards(null, filters, new ResponseAvailable() {
                 @Override
                 public void available(Object result) {
