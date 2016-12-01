@@ -2,9 +2,11 @@ package io.codemojo.sdk.ui;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -34,13 +36,27 @@ import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.RewardsScreenSettings;
 import io.codemojo.sdk.services.RewardsService;
 
-public class RewardDetailsActivity extends AppCompatActivity implements CodemojoException {
+public class RewardDetailsActivity extends AppCompatActivity implements CodemojoException, View.OnClickListener {
 
     RewardsService rewardsService;
     private RewardsScreenSettings settings;
     private BrandReward reward;
     private ProgressDialog progressDialog;
     private AlertDialog builder;
+
+    private RewardsFlowReceiver receiver = new RewardsFlowReceiver();
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(receiver, new IntentFilter(getString(R.string.intent_rewards_ui)));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,11 +77,11 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         }
 
         if(settings.getThemeButtonColor() > 0) {
-            findViewById(R.id.btnGrab).setBackgroundDrawable(getApplicationContext().getResources().getDrawable(settings.getThemeButtonColor()));
+            findViewById(R.id.codemojo_dialog_grab_button).setBackgroundDrawable(getApplicationContext().getResources().getDrawable(settings.getThemeButtonColor()));
         }
 
         if(settings.getThemeAccentFontColor() > 0) {
-            ((Button) findViewById(R.id.btnGrab)).setTextColor(getApplicationContext().getResources().getColor(settings.getThemeAccentFontColor()));
+            ((Button) findViewById(R.id.codemojo_dialog_grab_button)).setTextColor(getApplicationContext().getResources().getColor(settings.getThemeAccentFontColor()));
         }
 
         rewardsService = Codemojo.getRewardsService();
@@ -80,45 +96,75 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         ((TextView) findViewById(R.id.lblRedeemProcedure)).setText(reward.getRedemptionProcess());
         ((TextView) findViewById(R.id.lblSupport)).setText(reward.getSupport());
 
+        Button btnAction = (Button) findViewById(R.id.codemojo_dialog_grab_button);
         if(!settings.isAllowGrab()){
-            findViewById(R.id.btnGrab).setVisibility(View.GONE);
-        } else {
-            findViewById(R.id.btnGrab).setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    LayoutInflater inflater = getLayoutInflater();
-                    View dialogView = inflater.inflate(R.layout.rewards_claim_input, null);
-
-                    final EditText input = (EditText) dialogView.findViewById(R.id.txtCommunicationChannel);
-                    if(!settings.getCommunicationChannel().equals("")){
-                        input.setText(settings.getCommunicationChannel());
-                        if(!settings.shouldWaitForUserInput()){
-                            claimReward(input);
-                            return;
-                        }
-                    }
-
-                    input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                        @Override
-                        public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                            claimReward(input);
-                            return false;
-                        }
-                    });
-
-                    builder = new AlertDialog.Builder(RewardDetailsActivity.this)
-                            .setView(dialogView)
-                            .setPositiveButton("Claim Reward", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-
-                                    claimReward(input);
-                                }
-                            }).create();
-                    builder.show();
-                }
-            });
+            btnAction.setText(R.string.complete_milestone);
         }
+
+        btnAction.setOnClickListener(this);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        /*
+         * Check if reward grab is allowed
+         */
+        if(!settings.isAllowGrab()) {
+            if (settings.getViewMilestoneListener() != null) {
+                Intent grabIntent = new Intent();
+                grabIntent.putExtra("reward_details", reward);
+
+                grabIntent.setAction(Codemojo.ON_VIEW_MILESTONE_CLICK);
+                if (settings.getViewMilestoneListener().onClick(grabIntent)) {
+                    return;
+                }
+            }
+            if(settings.getMilesStones() != null) {
+                startActivity(new Intent(RewardDetailsActivity.this, RewardsMilestonesActivity.class) {{ putExtra("settings", settings); }});
+            }
+            return;
+        } else if (settings.getRewardGrabListener() != null) {
+            Intent grabIntent = new Intent();
+            grabIntent.putExtra("reward_details", reward);
+
+            grabIntent.setAction(Codemojo.ON_REWARD_GRAB_CLICK);
+            if (settings.getViewMilestoneListener().onClick(grabIntent)) {
+                return;
+            }
+
+        }
+
+        LayoutInflater inflater = getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.rewards_claim_input, null);
+
+        final EditText input = (EditText) dialogView.findViewById(R.id.txtCommunicationChannel);
+        if(!settings.getCommunicationChannel().equals("")){
+            input.setText(settings.getCommunicationChannel());
+            if(!settings.shouldWaitForUserInput()){
+                claimReward(input);
+                return;
+            }
+        }
+
+        input.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                claimReward(input);
+                return true;
+            }
+        });
+
+        builder = new AlertDialog.Builder(RewardDetailsActivity.this)
+                .setView(dialogView)
+                .setPositiveButton("Claim Reward", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        claimReward(input);
+                    }
+                }).create();
+        builder.show();
     }
 
     private void claimReward(final EditText input) {
@@ -140,9 +186,11 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         Map<String, String> details = new HashMap<String, String>();
         details.put("communicate", settings.isSendCouponAutomatically()? "1": "0");
         details.put("testing", settings.isTest()? "1": "0");
-        details.put("locale", settings.getLocale());
-        details.put("lat", String.valueOf(settings.getLatitude()));
-        details.put("lon", String.valueOf(settings.getLongitude()));
+        if(settings.getLocale() != null) {
+            details.put("locale", settings.getLocale());
+        }
+        if(settings.getLatitude() > 0) details.put("lat", String.valueOf(settings.getLatitude()));
+        if(settings.getLongitude() > 0) details.put("lon", String.valueOf(settings.getLongitude()));
         progressDialog = ProgressDialog.show(RewardDetailsActivity.this, "", "Please wait ...");
         rewardsService.grabReward(reward.getId(), input.getText().toString(), details, new ResponseAvailable() {
             @Override
@@ -152,6 +200,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
                 BrandGrabbedOffer go = (BrandGrabbedOffer) result;
                 Intent data = new Intent();
                 data.putExtra("reward", go);
+                data.putExtra("reward_details", reward);
                 data.putExtra("communication_channel", input.getText().toString());
                 setResult(Activity.RESULT_OK, data);
                 finish();
@@ -173,7 +222,10 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         Intent data = new Intent();
         data.putExtra("error", exception.getMessage());
         setResult(Activity.RESULT_CANCELED, data);
-        finish();
+        Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
+
+        if(progressDialog != null) progressDialog.dismiss();
+        if(builder != null) builder.dismiss();
     }
 
     @Override
@@ -194,4 +246,16 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
             overridePendingTransition(0, R.anim.hide_from_top);
         }
     }
+
+
+    public class RewardsFlowReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(getString(R.string.intent_rewards_ui)) && intent.getBooleanExtra("exit_flow", false)){
+                finish();
+            }
+        }
+    }
+
 }

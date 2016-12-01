@@ -13,6 +13,7 @@ import java.util.List;
 import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
+import io.codemojo.sdk.facades.RewardsDialogListener;
 import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.models.RewardsScreenSettings;
@@ -34,8 +35,14 @@ import io.codemojo.sdk.ui.ReferralActivity;
 public class Codemojo {
 
     public static final int CODEMOJO_REWARD_USER = 0x1A;
+    public static final int CODEMOJO_REFERRAL = 0x1B;
+
+    public static final String ON_REWARD_SELECT = "codemojo_reward_select";
+    public static final String ON_REWARD_GRAB_CLICK = "codemojo_reward_grab_click";
+    public static final String ON_VIEW_MILESTONE_CLICK = "codemojo_view_milestone_click";
 
     private static AuthenticationService authenticationService;
+
     private LoyaltyService loyaltyService;
     private static RewardsService rewardsService;
     private WalletService walletService;
@@ -49,6 +56,11 @@ public class Codemojo {
 
     private Activity context;
     private static String appId;
+    private static RewardsDialogListener titleClickListener;
+    private static RewardsDialogListener viewMilestoneListener;
+    private static RewardsDialogListener rewardSelectListener;
+    private static RewardsDialogListener rewardGrabListener;
+
 
     /**
      * @param context
@@ -89,22 +101,67 @@ public class Codemojo {
         return appId;
     }
 
+    public static void setTitleClickListener(RewardsDialogListener titleClickListener) {
+        Codemojo.titleClickListener = titleClickListener;
+    }
+
+    public static RewardsDialogListener getTitleClickListener() {
+        return titleClickListener;
+    }
+
+    public static void setViewMilestoneListener(RewardsDialogListener viewMilestoneListener) {
+        Codemojo.viewMilestoneListener = viewMilestoneListener;
+    }
+
+    public static RewardsDialogListener getViewMilestoneListener() {
+        return viewMilestoneListener;
+    }
+
+    public static void setRewardSelectListener(RewardsDialogListener rewardSelectListener) {
+        Codemojo.rewardSelectListener = rewardSelectListener;
+    }
+
+    public static RewardsDialogListener getRewardSelectListener() {
+        return rewardSelectListener;
+    }
+
+    public static void setRewardGrabListener(RewardsDialogListener rewardGrabListener) {
+        Codemojo.rewardGrabListener = rewardGrabListener;
+    }
+
+    public static RewardsDialogListener getRewardGrabListener() {
+        return rewardGrabListener;
+    }
+
     /**
      * @param settings
      */
-    public void launchReferralScreen(ReferralScreenSettings settings){
+    public void launchReferralScreen(ReferralScreenSettings settings, Activity callback){
         Intent referralIntent = new Intent(context, ReferralActivity.class);
-        referralIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         referralIntent.putExtra("settings", settings);
-        context.startActivity(referralIntent);
+        if(callback == null){
+            context.startActivity(referralIntent);
+        } else {
+            context.startActivityForResult(referralIntent, CODEMOJO_REFERRAL);
+        }
+    }
+
+    public void launchReferralScreen(ReferralScreenSettings settings){
+        launchReferralScreen(settings, null);
     }
 
     public void launchGamificationTransactionScreen(){
         Intent gamificationTransactionIntent = new Intent(context, GamificationTransactions.class);
-        gamificationTransactionIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(gamificationTransactionIntent);
     }
 
+
+    public void closeRewardsScreen(){
+        Intent intent = new Intent();
+        intent.setAction("io.codemojo.sdk.rewards_ui");
+        intent.putExtra("exit_flow", true);
+        context.sendBroadcast(intent);
+    }
 
     public void launchAvailableRewardsScreen(List<BrandReward> rewardList, RewardsScreenSettings settings, Activity resultPostBack){
         Intent availableRewardsIntent = new Intent(context, AvailableRewardsActivity.class);

@@ -72,10 +72,8 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
         promoCode.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if(keyEvent.getAction() == EditorInfo.IME_ACTION_DONE){
-                    processPromoCode(promoCode.getText().toString());
-                }
-                return false;
+                processPromoCode(promoCode.getText().toString());
+                return true;
             }
         });
 
@@ -103,8 +101,10 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
                 findViewById(R.id.panelEnterPromo).setVisibility(View.GONE);
                 findViewById(R.id.lblEnterReferral).setVisibility(View.VISIBLE);
                 if(status){
+                    setResult(RESULT_OK);
                     Toast.makeText(ReferralActivity.this, "Congratulations! You have successfully applied the referral code", Toast.LENGTH_SHORT).show();
                 } else {
+                    setResult(RESULT_CANCELED);
                     Toast.makeText(ReferralActivity.this, "Sorry, this referral code cannot be applied", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -120,6 +120,7 @@ public class ReferralActivity extends AppCompatActivity implements View.OnClickL
             shareIntent.putExtra(Intent.EXTRA_TEXT, settings.getMessage());
             shareIntent.putExtra(Intent.EXTRA_SUBJECT, settings.getSubjectLine());
             startActivity(Intent.createChooser(shareIntent, "Invite via"));
+            setResult(RESULT_OK);
         } else if (i == R.id.lblEnterReferral) {
             findViewById(R.id.lblEnterReferral).setVisibility(View.GONE);
             findViewById(R.id.panelEnterPromo).setVisibility(View.VISIBLE);

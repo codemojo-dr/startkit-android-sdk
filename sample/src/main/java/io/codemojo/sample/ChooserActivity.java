@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,12 +23,14 @@ import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.facades.MessageReceivedHandler;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.facades.RewardsAvailability;
+import io.codemojo.sdk.facades.RewardsDialogListener;
 import io.codemojo.sdk.models.BrandGrabbedOffer;
 import io.codemojo.sdk.models.BrandReward;
+import io.codemojo.sdk.models.Milestone;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.models.RewardsScreenSettings;
 
-public class ChooserActivity extends AppCompatActivity implements View.OnClickListener, MessageReceivedHandler {
+public class ChooserActivity extends AppCompatActivity implements View.OnClickListener, MessageReceivedHandler, RewardsDialogListener {
 
     private static final String TAG = "MainActivity";
 
@@ -117,6 +120,13 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                     public void available(List<BrandReward> rewards) {
                         progressDialog.dismiss();
                         RewardsScreenSettings settings = new RewardsScreenSettings();
+
+                        settings.setRewardSelectListener(ChooserActivity.this);
+                        settings.setTitleClickListener(ChooserActivity.this);
+                        settings.setViewMilestoneClickListener(ChooserActivity.this);
+                        settings.setRewardGrabListener(ChooserActivity.this);
+
+                        settings.setRewardsSelectionPageTitle("<b>Congratulations!!</b> Please pick a reward");
                         settings.setAllowGrab(true);
                         settings.setWaitForUserInput(false);
                         settings.setTesting(true);
@@ -125,6 +135,14 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                         settings.setThemeTitleStripeColor(R.color.colorPrimaryDark);
                         settings.setThemeAccentFontColor(R.color.white);
                         settings.setLocale("in");
+
+                        ArrayList<Milestone> milestones = new ArrayList<>();
+                        milestones.add(new Milestone(0, "Each 50th time you open the app"));
+                        milestones.add(new Milestone(0, "Every 10th time you post a facebook update"));
+                        milestones.add(new Milestone(0, "Every time you refer it to your contacts"));
+
+                        settings.setMilesStones(milestones);
+
                         AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
                     }
 
@@ -166,6 +184,13 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
 
     @Override
     public boolean onMessageReceived(Bundle data) {
+        return false;
+    }
+
+    @Override
+    public boolean onClick(Intent data) {
+        // Handle stuffs here - return true if you are consuming the event
+        Toast.makeText(this, "Hook: " + data.getAction(), Toast.LENGTH_SHORT).show();
         return false;
     }
 }

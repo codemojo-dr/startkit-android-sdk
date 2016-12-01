@@ -1,6 +1,10 @@
 package io.codemojo.sdk.models;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+
+import io.codemojo.sdk.Codemojo;
+import io.codemojo.sdk.facades.RewardsDialogListener;
 
 public class RewardsScreenSettings implements Serializable {
 
@@ -21,6 +25,16 @@ public class RewardsScreenSettings implements Serializable {
     private String locale;
     private double latitude;
     private double longitude;
+
+    private ArrayList<Milestone> milesStones;
+
+    public ArrayList<Milestone> getMilesStones() {
+        return milesStones;
+    }
+
+    public void setMilesStones(ArrayList<Milestone> milesStones) {
+        this.milesStones = milesStones;
+    }
 
     public String getRewardsSelectionPageTitle() {
         return rewardsSelectionPageTitle == null? "": rewardsSelectionPageTitle.trim();
@@ -137,4 +151,37 @@ public class RewardsScreenSettings implements Serializable {
     public void setAnimateScreenLoad(boolean animate) {
         this.animate = animate;
     }
+
+    public void setTitleClickListener(RewardsDialogListener listener){
+        Codemojo.setTitleClickListener(listener);
+    }
+
+    public void setViewMilestoneClickListener(RewardsDialogListener listener){
+        Codemojo.setViewMilestoneListener(listener);
+    }
+
+    public void setRewardSelectListener(RewardsDialogListener rewardSelectListener) {
+        Codemojo.setRewardSelectListener(rewardSelectListener);
+    }
+
+    public void setRewardGrabListener(RewardsDialogListener rewardSelectListener) {
+        Codemojo.setRewardGrabListener(rewardSelectListener);
+    }
+
+    public RewardsDialogListener getTitleClickListener() {
+        return Codemojo.getTitleClickListener();
+    }
+
+    public RewardsDialogListener getViewMilestoneListener() {
+        return Codemojo.getViewMilestoneListener();
+    }
+
+    public RewardsDialogListener getRewardSelectListener() {
+        return Codemojo.getRewardSelectListener();
+    }
+
+    public RewardsDialogListener getRewardGrabListener() {
+        return Codemojo.getRewardGrabListener();
+    }
+
 }

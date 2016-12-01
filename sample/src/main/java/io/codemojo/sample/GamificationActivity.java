@@ -75,13 +75,43 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     }
 
     @Override
-    public void newAchievementUnlocked(int totalAchievements, final String achievementName, GamificationAchievement achievement) {
+    public void newAchievementUnlocked(int totalAchievements, final String achievementName, final GamificationAchievement achievement) {
         /*
          * Trigger the reward
          */
         Map<String, String> filters = new HashMap<>();
         filters.put("locale", "in");
-        Log.e("gam_achivement", achievementName);
+        Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
+            ProgressDialog progressDialog;
+
+            @Override
+            public void processing() {
+                progressDialog = ProgressDialog.show(GamificationActivity.this, "", "Getting your reward...");
+                progressDialog.setCancelable(true);
+            }
+
+            @Override
+            public void available(List<BrandReward> rewards) {
+                progressDialog.dismiss();
+                RewardsScreenSettings settings = new RewardsScreenSettings();
+                settings.setAllowGrab(true);
+                settings.setTesting(true);
+                settings.setAnimateScreenLoad(true);
+                settings.setRewardsSelectionPageTitle("Congratulations, you have unlocked " + achievement.getLabel() + "\n"
+                        + "Please treat yourself with a reward");
+                settings.setThemeTitleStripeColor(R.color.colorAccent);
+                settings.setThemeButtonColor(R.color.colorAccent);
+                settings.setThemeAccentFontColor(R.color.white);
+                AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, GamificationActivity.this);
+            }
+
+            @Override
+            public void unavailable() {
+                Toast.makeText(GamificationActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
+                progressDialog.dismiss();
+            }
+        });
+
         /*
          * Alternatively you can do any other stuff
 

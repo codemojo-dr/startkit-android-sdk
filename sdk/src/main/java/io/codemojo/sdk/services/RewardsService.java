@@ -273,6 +273,22 @@ public class RewardsService extends BaseService {
         }).start();
     }
 
+    public void isRewardsEnabledForRegion(final ResponseAvailable callback) {
+        if (rewardsService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
+
+        Location location = getBestAvailableLocation();
+        if(location != null) {
+            isRewardsEnabledForRegion(location.getLatitude(), location.getLongitude(), callback);
+        } else {
+            TelephonyManager tm = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+            String locale = tm.getSimCountryIso();
+            isRewardsEnabledForRegion(locale, callback);
+        }
+    }
+
     public void isRewardsEnabledForRegion(final double latitude, final double longitude, final ResponseAvailable callback) {
         if (rewardsService == null){
             raiseException(new SDKInitializationException());

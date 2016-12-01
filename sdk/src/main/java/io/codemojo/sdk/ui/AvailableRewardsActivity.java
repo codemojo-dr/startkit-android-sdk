@@ -1,9 +1,13 @@
 package io.codemojo.sdk.ui;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,11 +28,24 @@ import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.RewardsScreenSettings;
 import io.codemojo.sdk.services.RewardsService;
 
-public class AvailableRewardsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
+public class AvailableRewardsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnClickListener {
 
     private ListView listTransactions;
     private RewardsAdapter adapter;
     private RewardsScreenSettings settings;
+    private RewardsFlowReceiver receiver = new RewardsFlowReceiver();
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(receiver, new IntentFilter(getString(R.string.intent_rewards_ui)));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(receiver);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +65,13 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
         listTransactions.setOnItemClickListener(this);
 
-        TextView description = ((TextView) findViewById(R.id.lblDescription));
+        TextView description = ((TextView) findViewById(R.id.codemojo_dialog_rewards_title));
+        description.setOnClickListener(this);
         if(settings.getRewardsSelectionPageTitle() == null) {
             description.setVisibility(View.GONE);
         } else {
             if (!settings.getRewardsSelectionPageTitle().isEmpty()) {
-                description.setText(settings.getRewardsSelectionPageTitle());
+                description.setText(Html.fromHtml(settings.getRewardsSelectionPageTitle()));
             } else {
                 if (settings.isAllowGrab()) {
                     description.setText("Congratulations! Please pick a reward");
@@ -86,7 +104,9 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
         if(rewardsList == null) {
             Map<String, String> filters = new HashMap<>();
-            if(settings.getLocale() != null) filters.put("locale", settings.getLocale());
+            if(settings.getLocale() != null){
+                filters.put("locale", settings.getLocale());
+            }
             if(settings.getLatitude() != 0) filters.put("lat", String.valueOf(settings.getLatitude()));
             if(settings.getLongitude() != 0) filters.put("lon", String.valueOf(settings.getLongitude()));
             if(!settings.getCommunicationChannel().isEmpty()) filters.put("email", settings.getCommunicationChannel());
@@ -125,6 +145,18 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         Intent details = new Intent(this, RewardDetailsActivity.class);
         details.putExtra("reward", reward);
         details.putExtra("settings", settings);
+        /*
+         * Check if a user defined handler is set
+         */
+        if(settings.getRewardSelectListener() != null){
+            /*
+             * If the event is consumed, stop further processing
+             */
+            details.setAction(Codemojo.ON_REWARD_SELECT);
+            if(settings.getRewardSelectListener().onClick(details)){
+                return;
+            }
+        }
         startActivityForResult(details, Codemojo.CODEMOJO_REWARD_USER);
     }
 
@@ -147,6 +179,39 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         super.finish();
         if(settings.shouldAnimateScreenLoad()) {
             overridePendingTransition(0, R.anim.hide_from_top);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view.getId() == R.id.codemojo_dialog_rewards_title) {
+
+            /*
+            * Check if a user defined handler is set
+            */
+            if (settings.getTitleClickListener() != null) {
+                Intent intent = new Intent();
+                intent.setAction(Codemojo.ON_VIEW_MILESTONE_CLICK);
+                if(settings.getTitleClickListener().onClick(intent)) {
+                    return;
+                }
+            }
+
+            if(settings.getMilesStones() != null) {
+                Intent mileStonesActivity = new Intent(this, RewardsMilestonesActivity.class);
+                mileStonesActivity.putExtra("settings", settings);
+                startActivity(mileStonesActivity);
+            }
+        }
+    }
+
+    public class RewardsFlowReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(intent.getAction().equals(getString(R.string.intent_rewards_ui)) && intent.getBooleanExtra("exit_flow", false)){
+                finish();
+            }
         }
     }
 }

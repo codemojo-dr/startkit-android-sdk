@@ -83,7 +83,7 @@
 
         <Button
             android:text="@string/grab_reward" android:layout_marginTop="-50dp"
-            android:id="@+id/btnGrab"
+            android:id="@+id/codemojo_dialog_grab_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
