@@ -13,6 +13,7 @@ import java.util.List;
 import io.codemojo.sdk.exceptions.AuthenticationException;
 import io.codemojo.sdk.facades.GamificationEarnedEvent;
 import io.codemojo.sdk.facades.LoyaltyEvent;
+import io.codemojo.sdk.facades.RewardsAvailability;
 import io.codemojo.sdk.facades.RewardsDialogListener;
 import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.ReferralScreenSettings;
@@ -60,6 +61,7 @@ public class Codemojo {
     private static RewardsDialogListener viewMilestoneListener;
     private static RewardsDialogListener rewardSelectListener;
     private static RewardsDialogListener rewardGrabListener;
+    private static RewardsAvailability rewardsCallbackListener;
 
 
     /**
@@ -176,8 +178,18 @@ public class Codemojo {
         }
     }
 
+    public void launchAvailableRewardsScreen(List<BrandReward> rewardList, RewardsScreenSettings settings, RewardsAvailability resultPostBack) {
+        Intent availableRewardsIntent = new Intent(context, AvailableRewardsActivity.class);
+        if(rewardList != null){
+            availableRewardsIntent.putExtra("rewards_list", new ArrayList<>(rewardList));
+        }
+        settings.setRewardsCallbackListener(resultPostBack);
+        availableRewardsIntent.putExtra("settings", settings);
+        context.startActivity(availableRewardsIntent);
+    }
+
     public void launchAvailableRewardsScreen(RewardsScreenSettings settings){
-        launchAvailableRewardsScreen(null, settings, null);
+        launchAvailableRewardsScreen(null, settings, (RewardsAvailability) null);
     }
 
     public void launchAvailableRewardsScreen(RewardsScreenSettings settings, Activity resultPostBack){
@@ -249,6 +261,14 @@ public class Codemojo {
 
     public static RewardsService getRewardsService(){
         return rewardsService;
+    }
+
+    public static RewardsAvailability getRewardsCallbackListener() {
+        return rewardsCallbackListener;
+    }
+
+    public static void setRewardsCallbackListener(RewardsAvailability rewardsCallbackListener) {
+        Codemojo.rewardsCallbackListener = rewardsCallbackListener;
     }
 
     public UserDataSyncService getUserDataSyncService() {

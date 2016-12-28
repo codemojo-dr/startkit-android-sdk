@@ -97,7 +97,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
                 settings.setAllowGrab(true);
                 settings.setTesting(true);
                 settings.setAnimateScreenLoad(true);
-                settings.setRewardsSelectionPageTitle("Congratulations, you have unlocked " + achievement.getLabel() + "\n"
+                settings.setRewardsSelectionPageTitle("<b>Congratulations, you have unlocked " + achievement.getLabel() + "</b><br/>"
                         + "Please treat yourself with a reward");
                 settings.setThemeTitleStripeColor(R.color.colorAccent);
                 settings.setThemeButtonColor(R.color.colorAccent);
@@ -109,6 +109,16 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
             public void unavailable() {
                 Toast.makeText(GamificationActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
                 progressDialog.dismiss();
+            }
+
+            @Override
+            public void grabbed(Intent data) {
+
+            }
+
+            @Override
+            public void error(String error) {
+
             }
         });
 
@@ -133,7 +143,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.btnUno:
-                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("facebook-post", null);
+                AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("uno", null);
                 break;
             case R.id.btnStart:
                 AppContext.getCodemojoClient().getGamificationService().captureAchievementsAction("start", null);

@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 import io.codemojo.sdk.Codemojo;
+import io.codemojo.sdk.facades.RewardsAvailability;
 import io.codemojo.sdk.facades.RewardsDialogListener;
 
 public class RewardsScreenSettings implements Serializable {
@@ -21,19 +22,22 @@ public class RewardsScreenSettings implements Serializable {
     private boolean test = false;
     private boolean waitForUserInput = true;
     private boolean animate = false;
+    private boolean showMilestonesButton = true;
+    private boolean shouldShowCloseButton = false;
 
-    private String locale;
+    private String locale, defaultLocale = "";
+    private String mileStonesButtonText = "";
     private double latitude;
     private double longitude;
 
-    private ArrayList<Milestone> milesStones;
+    private ArrayList<Milestone> mileStones;
 
-    public ArrayList<Milestone> getMilesStones() {
-        return milesStones;
+    public ArrayList<Milestone> getMileStones() {
+        return mileStones;
     }
 
-    public void setMilesStones(ArrayList<Milestone> milesStones) {
-        this.milesStones = milesStones;
+    public void setMileStones(ArrayList<Milestone> mileStones) {
+        this.mileStones = mileStones;
     }
 
     public String getRewardsSelectionPageTitle() {
@@ -184,4 +188,43 @@ public class RewardsScreenSettings implements Serializable {
         return Codemojo.getRewardGrabListener();
     }
 
+    public boolean shouldShowMilestonesButton() {
+        return showMilestonesButton;
+    }
+
+    public void setShowMilestonesButton(boolean showMilestonesButton) {
+        this.showMilestonesButton = showMilestonesButton;
+    }
+
+    public String getMileStonesButtonText() {
+        return mileStonesButtonText;
+    }
+
+    public void setMileStonesButtonText(String mileStonesButtonText) {
+        this.mileStonesButtonText = mileStonesButtonText;
+    }
+
+    public boolean isShouldShowCloseButton() {
+        return shouldShowCloseButton;
+    }
+
+    public void setShouldShowCloseButton(boolean shouldShowCloseButton) {
+        this.shouldShowCloseButton = shouldShowCloseButton;
+    }
+
+    public String getDefaultLocale() {
+        return defaultLocale;
+    }
+
+    public void setDefaultLocale(String defaultLocale) {
+        this.defaultLocale = defaultLocale;
+    }
+
+    public void setRewardsCallbackListener(RewardsAvailability rewardsCallbackListener) {
+        Codemojo.setRewardsCallbackListener(rewardsCallbackListener);
+    }
+
+    public RewardsAvailability getRewardsCallbackListener() {
+        return Codemojo.getRewardsCallbackListener();
+    }
 }

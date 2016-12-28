@@ -33,7 +33,12 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
     private ListView listTransactions;
     private RewardsAdapter adapter;
     private RewardsScreenSettings settings;
+    private boolean clickProcessing = false;
     private RewardsFlowReceiver receiver = new RewardsFlowReceiver();
+
+    private int session_clock = 0;
+    private Thread clockThread;
+    private List<BrandReward> rewardsList;
 
     @Override
     protected void onStart() {
@@ -59,6 +64,9 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
         setContentView(R.layout.activity_available_rewards);
 
+        findViewById(R.id.codemojo_dialog_rewards_close_button).setOnClickListener(this);
+        TextView btnClose = (TextView) findViewById(R.id.codemojo_dialog_rewards_close_button);
+
         final RewardsService rewardsService = Codemojo.getRewardsService();
 
         listTransactions = (ListView) findViewById(R.id.lstTransactions);
@@ -83,10 +91,12 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
         if(settings.getThemeTitleColor() > 0){
             description.setTextColor(getApplicationContext().getResources().getColor(settings.getThemeTitleColor()));
+            btnClose.setTextColor(getApplicationContext().getResources().getColor(settings.getThemeAccentFontColor()));
         }
 
         if(settings.getThemeTitleStripeColor() > 0){
             description.setBackgroundColor(getApplicationContext().getResources().getColor(settings.getThemeTitleStripeColor()));
+            btnClose.setBackgroundDrawable(getApplicationContext().getResources().getDrawable(settings.getThemeTitleStripeColor()));
         }
 
         try {
@@ -95,7 +105,13 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
             Log.e("Log", e.getMessage());
         }
 
-        ArrayList<BrandReward> rewardsList = null;
+        if(settings.isShouldShowCloseButton()) {
+            btnClose.setOnClickListener(this);
+        } else {
+            btnClose.setVisibility(View.GONE);
+        }
+
+        rewardsList = null;
 
         try {
             rewardsList = (ArrayList<BrandReward>) getIntent().getSerializableExtra("rewards_list");
@@ -114,6 +130,7 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
                 @Override
                 public void available(Object result) {
                     if (result != null) {
+                        rewardsList = (List<BrandReward>) result;
                         updateAdapterWithRewards((List<BrandReward>) result);
                     }
                 }
@@ -122,6 +139,39 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
             updateAdapterWithRewards(rewardsList);
         }
 
+        clockThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    session_clock++;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+        });
+        clockThread.start();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(clockThread != null) try {
+            clockThread.wait();
+        } catch (InterruptedException | IllegalMonitorStateException e) {
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(clockThread != null) {
+            try {
+                clockThread.notify();
+            } catch (IllegalMonitorStateException e) {
+            }
+        }
     }
 
     @Override
@@ -141,6 +191,10 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        if (clickProcessing) return;
+
+        clickProcessing = true;
+
         BrandReward reward = (BrandReward) adapterView.getAdapter().getItem(i);
         Intent details = new Intent(this, RewardDetailsActivity.class);
         details.putExtra("reward", reward);
@@ -153,7 +207,8 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
              * If the event is consumed, stop further processing
              */
             details.setAction(Codemojo.ON_REWARD_SELECT);
-            if(settings.getRewardSelectListener().onClick(details)){
+            if(settings.getRewardSelectListener().onClick(details, this)){
+                clickProcessing = false;
                 return;
             }
         }
@@ -165,12 +220,21 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         if(requestCode == Codemojo.CODEMOJO_REWARD_USER){
             if(resultCode == Activity.RESULT_OK){
                 setResult(Activity.RESULT_OK, data);
+
+                if(Codemojo.getRewardsCallbackListener() != null){
+                    Codemojo.getRewardsCallbackListener().grabbed(data);
+                }
+
                 finish();
             } else if(resultCode == Activity.RESULT_CANCELED) {
                 setResult(Activity.RESULT_CANCELED, data);
+                if(Codemojo.getRewardsCallbackListener() != null && data.hasExtra("error")){
+                    Codemojo.getRewardsCallbackListener().error(data.getStringExtra("error"));
+                }
                 finish();
             }
         }
+        clickProcessing = false;
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -180,6 +244,21 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         if(settings.shouldAnimateScreenLoad()) {
             overridePendingTransition(0, R.anim.hide_from_top);
         }
+
+        /*
+         * Log the session time
+         */
+        Map<String, String> detail = new HashMap<>();
+        List<String> ids = new ArrayList<>();
+
+        for(BrandReward r: rewardsList) {
+            ids.add(r.getId());
+        }
+
+        if(!settings.getCommunicationChannel().isEmpty()) {
+            detail.put("email", settings.getCommunicationChannel());
+        }
+        Codemojo.getRewardsService().clockSession(ids, session_clock, detail);
     }
 
     @Override
@@ -192,16 +271,19 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
             if (settings.getTitleClickListener() != null) {
                 Intent intent = new Intent();
                 intent.setAction(Codemojo.ON_VIEW_MILESTONE_CLICK);
-                if(settings.getTitleClickListener().onClick(intent)) {
+                if(settings.getTitleClickListener().onClick(intent, this)) {
                     return;
                 }
             }
 
-            if(settings.getMilesStones() != null) {
+            if(settings.getMileStones() != null) {
                 Intent mileStonesActivity = new Intent(this, RewardsMilestonesActivity.class);
                 mileStonesActivity.putExtra("settings", settings);
                 startActivity(mileStonesActivity);
             }
+        } else if( view.getId() == R.id.codemojo_dialog_rewards_close_button) {
+            setResult(Activity.RESULT_CANCELED, new Intent());
+            finish();
         }
     }
 

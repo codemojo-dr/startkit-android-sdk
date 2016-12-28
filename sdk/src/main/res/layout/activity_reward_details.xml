@@ -8,7 +8,7 @@
 
     <LinearLayout
         android:background="#FAFFFFFF" android:layout_margin="@dimen/activity_horizontal_margin"
-        android:padding="@dimen/activity_horizontal_margin"
+        android:padding="@dimen/activity_horizontal_margin" android:id="@+id/codemojo_dialog_rewards_detail_panel"
         android:orientation="vertical" android:layout_centerInParent="true"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -87,5 +87,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/codemojo_dialog_rewards_detail_close_button"
+        android:text="x" android:layout_alignTop="@id/codemojo_dialog_rewards_detail_panel"
+        android:layout_alignRight="@id/codemojo_dialog_rewards_detail_panel"
+        android:padding="10dp" android:textColor="@color/translucent_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
 </RelativeLayout>

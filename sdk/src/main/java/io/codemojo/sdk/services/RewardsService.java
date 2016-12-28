@@ -419,6 +419,45 @@ public class RewardsService extends BaseService {
         }).start();
     }
 
+    public void clockSession(final List<String> reward_id, final int session_duration, Map<String, String> additional_details){
+        if (rewardsService == null){
+            raiseException(new SDKInitializationException());
+            return;
+        }
+
+        if(additional_details == null){
+            additional_details = new HashMap<>();
+        }
+
+        TelephonyManager tm = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        String locale = tm.getSimCountryIso();
+
+        if(!additional_details.containsKey("locale")) {
+            if(!locale.isEmpty()) additional_details.put("locale", locale);
+        }
+
+        Location location = getBestAvailableLocation();
+        if(location != null){
+            additional_details.put("lat", String.valueOf(location.getLatitude()));
+            additional_details.put("lon", String.valueOf(location.getLongitude()));
+        }
+
+        final Map<String, String> finalAdditional_details = additional_details;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    rewardsService.clockSession(
+                            app_id, reward_id, session_duration, finalAdditional_details
+                    ).execute();
+                } catch (Exception ignored) {
+                    raiseException(ignored);
+                }
+
+            }
+        }).start();
+    }
+
     /**
      * @param reward_id
      * @param communication_channel

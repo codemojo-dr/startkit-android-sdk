@@ -22,13 +22,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.squareup.picasso.Picasso;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.R;
+import io.codemojo.sdk.utils.ImageLoader;
 import io.codemojo.sdk.facades.CodemojoException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.BrandGrabbedOffer;
@@ -45,6 +46,9 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
     private AlertDialog builder;
 
     private RewardsFlowReceiver receiver = new RewardsFlowReceiver();
+
+    private int session_clock = 0;
+    private Thread clockThread;
 
     @Override
     protected void onStart() {
@@ -70,6 +74,8 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
         setContentView(R.layout.activity_reward_details);
 
+        TextView btnClose = (TextView) findViewById(R.id.codemojo_dialog_rewards_detail_close_button);
+
         assert getSupportActionBar() != null;
         try {
             if(getSupportActionBar() != null) getSupportActionBar().hide();
@@ -89,7 +95,14 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         reward = (BrandReward) getIntent().getSerializableExtra("reward");
 
         ImageView view = (ImageView) findViewById(R.id.banner);
-        Picasso.with(this).load(reward.getLogo()).into(view);
+        ImageLoader imgLoader = new ImageLoader(this);
+        imgLoader.DisplayImage(reward.getLogo(), R.drawable.icon, view);
+
+        if(settings.isShouldShowCloseButton()) {
+            btnClose.setOnClickListener(this);
+        } else {
+            btnClose.setVisibility(View.GONE);
+        }
 
         ((TextView) findViewById(R.id.lblTitle)).setText(reward.getOffer());
         ((TextView) findViewById(R.id.lblFinePrint)).setText(reward.getFineprint());
@@ -98,15 +111,42 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
         Button btnAction = (Button) findViewById(R.id.codemojo_dialog_grab_button);
         if(!settings.isAllowGrab()){
-            btnAction.setText(R.string.complete_milestone);
+            if(!settings.shouldShowMilestonesButton()){
+                btnAction.setVisibility(View.GONE);
+            } else {
+                btnAction.setText(
+                        (settings.getMileStonesButtonText() != null && !settings.getMileStonesButtonText().isEmpty()) ?
+                        settings.getMileStonesButtonText(): getString(R.string.complete_milestone)
+                );
+            }
         }
 
         btnAction.setOnClickListener(this);
-    }
 
+        clockThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while(true) {
+                    session_clock++;
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignored) {
+                    }
+                }
+            }
+        });
+        clockThread.start();
+    }
 
     @Override
     public void onClick(View view) {
+
+        if( view.getId() == R.id.codemojo_dialog_rewards_detail_close_button) {
+            setResult(Activity.RESULT_FIRST_USER, new Intent());
+            finish();
+            return;
+        }
+
         /*
          * Check if reward grab is allowed
          */
@@ -116,11 +156,11 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
                 grabIntent.putExtra("reward_details", reward);
 
                 grabIntent.setAction(Codemojo.ON_VIEW_MILESTONE_CLICK);
-                if (settings.getViewMilestoneListener().onClick(grabIntent)) {
+                if (settings.getViewMilestoneListener().onClick(grabIntent, this)) {
                     return;
                 }
             }
-            if(settings.getMilesStones() != null) {
+            if(settings.getMileStones() != null) {
                 startActivity(new Intent(RewardDetailsActivity.this, RewardsMilestonesActivity.class) {{ putExtra("settings", settings); }});
             }
             return;
@@ -129,7 +169,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
             grabIntent.putExtra("reward_details", reward);
 
             grabIntent.setAction(Codemojo.ON_REWARD_GRAB_CLICK);
-            if (settings.getViewMilestoneListener().onClick(grabIntent)) {
+            if (settings.getViewMilestoneListener().onClick(grabIntent, this)) {
                 return;
             }
 
@@ -165,6 +205,27 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
                     }
                 }).create();
         builder.show();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if(clockThread != null) try {
+            clockThread.wait();
+        } catch (InterruptedException | IllegalMonitorStateException e) {
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(clockThread != null) {
+            try {
+                clockThread.notify();
+            } catch (IllegalMonitorStateException e) {
+
+            }
+        }
     }
 
     private void claimReward(final EditText input) {
@@ -245,6 +306,17 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         if(settings.shouldAnimateScreenLoad()) {
             overridePendingTransition(0, R.anim.hide_from_top);
         }
+
+        /*
+         * Log the session time
+         */
+        Map<String, String> detail = new HashMap<>();
+        if(!settings.getCommunicationChannel().isEmpty()) {
+            detail.put("email", settings.getCommunicationChannel());
+        }
+        List<String> ids = new ArrayList<>();
+        ids.add(reward.getId());
+        Codemojo.getRewardsService().clockSession(ids, session_clock, detail);
     }
 
 

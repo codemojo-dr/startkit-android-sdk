@@ -8,12 +8,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import io.codemojo.sdk.R;
-import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.Milestone;
 
 /**
@@ -44,7 +41,7 @@ public class MileStonesAdapter extends ArrayAdapter<Milestone> {
 
             ImageView img = (ImageView) v.findViewById(R.id.imageBrandLogo);
             if(p.getImage() > 0) {
-                Picasso.with(getContext()).load(p.getImage()).placeholder(R.drawable.icon).into(img);
+                img.setImageDrawable(getContext().getResources().getDrawable(p.getImage()));
             } else {
                 img.setVisibility(View.GONE);
             }

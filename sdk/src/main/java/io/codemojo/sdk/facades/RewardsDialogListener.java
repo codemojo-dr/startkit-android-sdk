@@ -1,5 +1,6 @@
 package io.codemojo.sdk.facades;
 
+import android.content.Context;
 import android.content.Intent;
 
 /**
@@ -8,6 +9,6 @@ import android.content.Intent;
 
 public interface RewardsDialogListener {
 
-    boolean onClick(Intent data);
+    boolean onClick(Intent data, Context context);
 
 }

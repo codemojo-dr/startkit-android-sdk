@@ -1,8 +1,6 @@
 package io.codemojo.sdk.adapters;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +8,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
-import java.net.URL;
 import java.util.List;
 
 import io.codemojo.sdk.R;
 import io.codemojo.sdk.models.BrandReward;
+import io.codemojo.sdk.utils.ImageLoader;
 
 /**
  * Created by shoaib on 15/07/16.
@@ -31,25 +27,30 @@ public class RewardsAdapter extends ArrayAdapter<BrandReward> {
         super(context, resource, objects);
     }
 
+    static class ViewHolder {
+        ImageView icon;
+        TextView text;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        View v = convertView;
+        View v = null;
         final BrandReward p = getItem(position);
 
-        if (v == null) {
-            LayoutInflater vi;
-            vi = LayoutInflater.from(getContext());
-            v = vi.inflate(R.layout.available_rewards_item, null);
-        }
-
+        LayoutInflater vi;
+        vi = LayoutInflater.from(getContext());
+        v = vi.inflate(R.layout.available_rewards_item, null);
 
         if (p != null) {
-            TextView description = (TextView) v.findViewById(R.id.rewardTitle);
-            description.setText(p.getOffer());
+            ViewHolder holder = (ViewHolder) v.getTag();
 
-            ImageView img = (ImageView) v.findViewById(R.id.imageBrandLogo);
-            Picasso.with(getContext()).load(p.getLogo()).placeholder(R.drawable.icon).into(img);
+            ((TextView) v.findViewById(R.id.rewardTitle)).setText(p.getOffer());
+
+            ImageView image = (ImageView) v.findViewById(R.id.imageBrandLogo);
+
+            ImageLoader imgLoader = new ImageLoader(getContext());
+            imgLoader.DisplayImage(p.getLogo(), R.drawable.icon, image);
         }
 
         return v;

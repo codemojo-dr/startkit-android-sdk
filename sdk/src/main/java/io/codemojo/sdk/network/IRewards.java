@@ -1,6 +1,7 @@
 package io.codemojo.sdk.network;
 
 
+import java.util.List;
 import java.util.Map;
 
 import io.codemojo.sdk.models.GenericResponse;
@@ -42,5 +43,9 @@ public interface IRewards {
     @FormUrlEncoded
     Call<ResponseRewardGrab> grabReward(@Path("app_id") String app_id, @Path("reward_id") String reward_id, @Field("customer_id") String customer_id,
                                             @FieldMap(encoded = true) Map<String, String> additional_details);
+
+    @POST("/v1/services/rewards/session/{app_id}")
+    @FormUrlEncoded
+    Call<GenericResponse> clockSession(@Path("app_id") String app_id, @Field("reward_ids[]") List<String> reward_ids, @Field("session_time") int session_time, @QueryMap(encoded = true) Map<String, String> additional_details);
 
 }

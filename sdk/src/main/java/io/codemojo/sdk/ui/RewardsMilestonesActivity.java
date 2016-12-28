@@ -69,7 +69,7 @@ public class RewardsMilestonesActivity extends AppCompatActivity {
             Log.e("Log", e.getMessage());
         }
 
-        updateAdapterWithRewards(settings.getMilesStones());
+        updateAdapterWithRewards(settings.getMileStones());
 
     }
 

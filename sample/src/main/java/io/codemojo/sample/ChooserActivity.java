@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -29,6 +30,7 @@ import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.Milestone;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.models.RewardsScreenSettings;
+import io.codemojo.sdk.ui.RewardDetailsActivity;
 
 public class ChooserActivity extends AppCompatActivity implements View.OnClickListener, MessageReceivedHandler, RewardsDialogListener {
 
@@ -135,21 +137,32 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                         settings.setThemeTitleStripeColor(R.color.colorPrimaryDark);
                         settings.setThemeAccentFontColor(R.color.white);
                         settings.setLocale("in");
+                        settings.setShouldShowCloseButton(true);
 
                         ArrayList<Milestone> milestones = new ArrayList<>();
                         milestones.add(new Milestone(0, "Each 50th time you open the app"));
                         milestones.add(new Milestone(0, "Every 10th time you post a facebook update"));
                         milestones.add(new Milestone(0, "Every time you refer it to your contacts"));
 
-                        settings.setMilesStones(milestones);
+                        settings.setMileStones(milestones);
 
-                        AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, ChooserActivity.this);
+                        AppContext.getCodemojoClient().launchAvailableRewardsScreen(rewards, settings, this);
                     }
 
                     @Override
                     public void unavailable() {
                         Toast.makeText(ChooserActivity.this," Rewards not available for this location", Toast.LENGTH_LONG).show();
                         progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void grabbed(Intent data) {
+                        Toast.makeText(ChooserActivity.this, "Your reward is on its way!", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void error(String error) {
+                        Toast.makeText(ChooserActivity.this, "Error: " + error, Toast.LENGTH_SHORT).show();
                     }
                 });
                 break;
@@ -188,7 +201,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public boolean onClick(Intent data) {
+    public boolean onClick(Intent data, Context context) {
         // Handle stuffs here - return true if you are consuming the event
         Toast.makeText(this, "Hook: " + data.getAction(), Toast.LENGTH_SHORT).show();
         return false;
