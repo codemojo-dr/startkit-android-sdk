@@ -109,6 +109,7 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
             case R.id.btnRewards:
                 Map<String, String> filters = new HashMap<>();
                 filters.put("locale", "in");
+                filters.put("testing", "true");
                 Codemojo.getRewardsService().onRewardsAvailable(null, filters, new RewardsAvailability() {
                     ProgressDialog progressDialog;
 
@@ -128,9 +129,10 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
                         settings.setViewMilestoneClickListener(ChooserActivity.this);
                         settings.setRewardGrabListener(ChooserActivity.this);
 
-                        settings.setRewardsSelectionPageTitle("<b>Congratulations!!</b> Please pick a reward");
+                        settings.setRewardsSelectionPageTitle("<b>Congratulations!!</b> Please pick a Gift!");
                         settings.setAllowGrab(true);
                         settings.setWaitForUserInput(false);
+                        settings.setCommunicationChannel("vb.shoaib@gmail.com");
                         settings.setTesting(true);
                         settings.setThemeTitleColor(R.color.white);
                         settings.setThemeButtonColor(R.color.colorAccent);
@@ -205,5 +207,10 @@ public class ChooserActivity extends AppCompatActivity implements View.OnClickLi
         // Handle stuffs here - return true if you are consuming the event
         Toast.makeText(this, "Hook: " + data.getAction(), Toast.LENGTH_SHORT).show();
         return false;
+    }
+
+    @Override
+    public void onError(String error) {
+        Toast.makeText(this, "Hook Error: " + error, Toast.LENGTH_SHORT).show();
     }
 }

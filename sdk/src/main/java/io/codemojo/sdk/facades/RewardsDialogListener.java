@@ -11,4 +11,6 @@ public interface RewardsDialogListener {
 
     boolean onClick(Intent data, Context context);
 
+    void onError(String error);
+
 }

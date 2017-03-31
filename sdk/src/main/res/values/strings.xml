@@ -7,7 +7,7 @@
     <string name="grab_reward">Grab Reward</string>
     <string name="fine_print">Fine print</string>
     <string name="please_enter_communication_channel">Please enter your Email ID / Mobile number to have the reward delivered</string>
-    <string name="email_or_phone_number">Email or Phone number</string>
+    <string name="email_or_phone_number">Enter E-Mail ID to receive your reward</string>
     <string name="complete_milestone">Complete a milestone to Unlock</string>
     <string name="intent_rewards_ui">io.codemojo.sdk.rewards_ui</string>
 </resources>

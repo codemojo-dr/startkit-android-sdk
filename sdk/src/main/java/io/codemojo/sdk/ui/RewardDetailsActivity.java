@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
@@ -49,17 +50,18 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
     private int session_clock = 0;
     private Thread clockThread;
+    private final Object clockLock = new Object();
 
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(receiver, new IntentFilter(getString(R.string.intent_rewards_ui)));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(getString(R.string.intent_rewards_ui)));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     @Override
@@ -211,7 +213,9 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
     protected void onPause() {
         super.onPause();
         if(clockThread != null) try {
-            clockThread.wait();
+            synchronized (clockLock) {
+                clockThread.wait();
+            }
         } catch (InterruptedException | IllegalMonitorStateException e) {
         }
     }
@@ -221,7 +225,9 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         super.onResume();
         if(clockThread != null) {
             try {
-                clockThread.notify();
+                synchronized (clockLock) {
+                    clockThread.notify();
+                }
             } catch (IllegalMonitorStateException e) {
 
             }
@@ -230,7 +236,7 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
 
     private void claimReward(final EditText input) {
         if(input.getText().toString().trim().isEmpty() || input.getText().toString().length() <= 5){
-            Toast.makeText(this, "Valid Email ID or Mobile number required to receive the coupon", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Valid Email ID is required to receive the coupon", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -284,6 +290,10 @@ public class RewardDetailsActivity extends AppCompatActivity implements Codemojo
         data.putExtra("error", exception.getMessage());
         setResult(Activity.RESULT_CANCELED, data);
         Toast.makeText(this, exception.getMessage(), Toast.LENGTH_LONG).show();
+
+        if(Codemojo.getRewardsErrorListener() != null){
+            Codemojo.getRewardsErrorListener().onError(exception.getMessage());
+        }
 
         if(progressDialog != null) progressDialog.dismiss();
         if(builder != null) builder.dismiss();

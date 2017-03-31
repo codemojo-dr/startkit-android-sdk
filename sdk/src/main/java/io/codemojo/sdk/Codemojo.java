@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +42,7 @@ public class Codemojo {
     public static final String ON_REWARD_SELECT = "codemojo_reward_select";
     public static final String ON_REWARD_GRAB_CLICK = "codemojo_reward_grab_click";
     public static final String ON_VIEW_MILESTONE_CLICK = "codemojo_view_milestone_click";
+    public static final String ON_ERROR = "codemojo_error";
 
     private static AuthenticationService authenticationService;
 
@@ -57,10 +59,9 @@ public class Codemojo {
 
     private Activity context;
     private static String appId;
-    private static RewardsDialogListener titleClickListener;
-    private static RewardsDialogListener viewMilestoneListener;
-    private static RewardsDialogListener rewardSelectListener;
-    private static RewardsDialogListener rewardGrabListener;
+    private static RewardsDialogListener titleClickListener, viewMilestoneListener, rewardSelectListener,
+            rewardGrabListener, rewardsErrorListener;
+
     private static RewardsAvailability rewardsCallbackListener;
 
 
@@ -135,6 +136,14 @@ public class Codemojo {
         return rewardGrabListener;
     }
 
+    public static RewardsDialogListener getRewardsErrorListener() {
+        return rewardsErrorListener;
+    }
+
+    public static void setRewardsErrorListener(RewardsDialogListener rewardsErrorListener) {
+        Codemojo.rewardsErrorListener = rewardsErrorListener;
+    }
+
     /**
      * @param settings
      */
@@ -159,10 +168,9 @@ public class Codemojo {
 
 
     public void closeRewardsScreen(){
-        Intent intent = new Intent();
-        intent.setAction("io.codemojo.sdk.rewards_ui");
+        Intent intent = new Intent("io.codemojo.sdk.rewards_ui");
         intent.putExtra("exit_flow", true);
-        context.sendBroadcast(intent);
+        LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
     public void launchAvailableRewardsScreen(List<BrandReward> rewardList, RewardsScreenSettings settings, Activity resultPostBack){

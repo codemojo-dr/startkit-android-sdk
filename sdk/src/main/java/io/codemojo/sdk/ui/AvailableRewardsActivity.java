@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.util.Log;
@@ -38,18 +39,19 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
 
     private int session_clock = 0;
     private Thread clockThread;
+    private final Object clockLock = new Object();
     private List<BrandReward> rewardsList;
 
     @Override
     protected void onStart() {
         super.onStart();
-        registerReceiver(receiver, new IntentFilter(getString(R.string.intent_rewards_ui)));
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, new IntentFilter(getString(R.string.intent_rewards_ui)));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
     @Override
@@ -126,15 +128,19 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
             if(settings.getLatitude() != 0) filters.put("lat", String.valueOf(settings.getLatitude()));
             if(settings.getLongitude() != 0) filters.put("lon", String.valueOf(settings.getLongitude()));
             if(!settings.getCommunicationChannel().isEmpty()) filters.put("email", settings.getCommunicationChannel());
-            rewardsService.getAvailableRewards(null, filters, new ResponseAvailable() {
-                @Override
-                public void available(Object result) {
-                    if (result != null) {
-                        rewardsList = (List<BrandReward>) result;
-                        updateAdapterWithRewards((List<BrandReward>) result);
+            settings.setCommunicationChannel("email_id");
+            settings.setWaitForUserInput(false);
+            if(rewardsService != null) {
+                rewardsService.getAvailableRewards(null, filters, new ResponseAvailable() {
+                    @Override
+                    public void available(Object result) {
+                        if (result != null) {
+                            rewardsList = (List<BrandReward>) result;
+                            updateAdapterWithRewards((List<BrandReward>) result);
+                        }
                     }
-                }
-            });
+                });
+            }
         } else {
             updateAdapterWithRewards(rewardsList);
         }
@@ -158,7 +164,9 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
     protected void onPause() {
         super.onPause();
         if(clockThread != null) try {
-            clockThread.wait();
+            synchronized (clockLock) {
+                clockThread.wait();
+            }
         } catch (InterruptedException | IllegalMonitorStateException e) {
         }
     }
@@ -168,7 +176,9 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         super.onResume();
         if(clockThread != null) {
             try {
-                clockThread.notify();
+                synchronized (clockLock) {
+                    clockThread.notify();
+                }
             } catch (IllegalMonitorStateException e) {
             }
         }
@@ -228,8 +238,13 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
                 finish();
             } else if(resultCode == Activity.RESULT_CANCELED) {
                 setResult(Activity.RESULT_CANCELED, data);
-                if(Codemojo.getRewardsCallbackListener() != null && data.hasExtra("error")){
-                    Codemojo.getRewardsCallbackListener().error(data.getStringExtra("error"));
+                if(data.hasExtra("error")){
+                    if(Codemojo.getRewardsCallbackListener() != null) {
+                        Codemojo.getRewardsCallbackListener().error(data.getStringExtra("error"));
+                    }
+                    if(Codemojo.getRewardsErrorListener() != null){
+                        Codemojo.getRewardsErrorListener().onError(data.getStringExtra("error"));
+                    }
                 }
                 finish();
             }
@@ -241,7 +256,7 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
     @Override
     public void finish() {
         super.finish();
-        if(settings.shouldAnimateScreenLoad()) {
+        if(settings != null && settings.shouldAnimateScreenLoad()) {
             overridePendingTransition(0, R.anim.hide_from_top);
         }
 
@@ -251,14 +266,16 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         Map<String, String> detail = new HashMap<>();
         List<String> ids = new ArrayList<>();
 
-        for(BrandReward r: rewardsList) {
-            ids.add(r.getId());
-        }
+        if(rewardsList != null) {
+            for (BrandReward r : rewardsList) {
+                ids.add(r.getId());
+            }
 
-        if(!settings.getCommunicationChannel().isEmpty()) {
-            detail.put("email", settings.getCommunicationChannel());
+            if (settings != null && !settings.getCommunicationChannel().isEmpty()) {
+                detail.put("email", settings.getCommunicationChannel());
+            }
+            Codemojo.getRewardsService().clockSession(ids, session_clock, detail);
         }
-        Codemojo.getRewardsService().clockSession(ids, session_clock, detail);
     }
 
     @Override

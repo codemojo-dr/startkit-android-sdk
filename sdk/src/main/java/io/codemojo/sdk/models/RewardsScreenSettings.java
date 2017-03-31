@@ -172,6 +172,10 @@ public class RewardsScreenSettings implements Serializable {
         Codemojo.setRewardGrabListener(rewardSelectListener);
     }
 
+    public void setRewardsErrorListener(RewardsDialogListener rewardsErrorListener){
+        Codemojo.setRewardsErrorListener(rewardsErrorListener);
+    }
+
     public RewardsDialogListener getTitleClickListener() {
         return Codemojo.getTitleClickListener();
     }
@@ -186,6 +190,10 @@ public class RewardsScreenSettings implements Serializable {
 
     public RewardsDialogListener getRewardGrabListener() {
         return Codemojo.getRewardGrabListener();
+    }
+
+    public RewardsDialogListener getRewardsErrorListener(){
+        return Codemojo.getRewardsErrorListener();
     }
 
     public boolean shouldShowMilestonesButton() {
