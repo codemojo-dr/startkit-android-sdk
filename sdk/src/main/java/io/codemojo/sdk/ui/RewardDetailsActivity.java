@@ -30,13 +30,13 @@ import java.util.Map;
 
 import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.R;
-import io.codemojo.sdk.utils.ImageLoader;
 import io.codemojo.sdk.facades.CodemojoException;
 import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.models.BrandGrabbedOffer;
 import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.RewardsScreenSettings;
 import io.codemojo.sdk.services.RewardsService;
+import io.codemojo.sdk.utils.ImageLoader;
 
 public class RewardDetailsActivity extends AppCompatActivity implements CodemojoException, View.OnClickListener {
 

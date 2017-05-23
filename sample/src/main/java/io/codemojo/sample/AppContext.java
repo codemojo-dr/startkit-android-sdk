@@ -1,7 +1,6 @@
 package io.codemojo.sample;
 
 import android.app.Activity;
-import android.content.Context;
 
 import io.codemojo.sdk.Codemojo;
 

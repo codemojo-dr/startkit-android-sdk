@@ -5,7 +5,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
@@ -54,6 +56,7 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.GINGERBREAD)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,8 +131,6 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
             if(settings.getLatitude() != 0) filters.put("lat", String.valueOf(settings.getLatitude()));
             if(settings.getLongitude() != 0) filters.put("lon", String.valueOf(settings.getLongitude()));
             if(!settings.getCommunicationChannel().isEmpty()) filters.put("email", settings.getCommunicationChannel());
-            settings.setCommunicationChannel("email_id");
-            settings.setWaitForUserInput(false);
             if(rewardsService != null) {
                 rewardsService.getAvailableRewards(null, filters, new ResponseAvailable() {
                     @Override

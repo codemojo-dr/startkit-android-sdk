@@ -5,7 +5,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -22,7 +21,6 @@ import java.util.Map;
 
 import io.codemojo.sdk.Codemojo;
 import io.codemojo.sdk.facades.MessageReceivedHandler;
-import io.codemojo.sdk.facades.ResponseAvailable;
 import io.codemojo.sdk.facades.RewardsAvailability;
 import io.codemojo.sdk.facades.RewardsDialogListener;
 import io.codemojo.sdk.models.BrandGrabbedOffer;
@@ -30,7 +28,6 @@ import io.codemojo.sdk.models.BrandReward;
 import io.codemojo.sdk.models.Milestone;
 import io.codemojo.sdk.models.ReferralScreenSettings;
 import io.codemojo.sdk.models.RewardsScreenSettings;
-import io.codemojo.sdk.ui.RewardDetailsActivity;
 
 public class ChooserActivity extends AppCompatActivity implements View.OnClickListener, MessageReceivedHandler, RewardsDialogListener {
 
