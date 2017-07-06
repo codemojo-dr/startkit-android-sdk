@@ -10,6 +10,8 @@ import android.util.Log;
 import java.util.Iterator;
 import java.util.Set;
 
+import io.codemojo.sdk.BuildConfig;
+
 /**
  * Created by shoaib on 24/06/16.
  */
@@ -24,12 +26,14 @@ public class InstallReceiver extends BroadcastReceiver {
         Bundle extras = intent.getExtras();
         String referrerString = (String) extras.get("referrer");
 
-        Set<String> keys = extras.keySet();
-        Iterator<String> it = keys.iterator();
-        while (it.hasNext()) {
-            String key = it.next();
-            // Using {@String#format()} since proguard cannot strip string concatenation
-            Log.e("CM_DD", String.format("[%s=%s]", key, extras.get(key)));
+        // Disable logs in production
+        if (BuildConfig.DEBUG) {
+            Set<String> keys = extras.keySet();
+            // For each over iterator for performance
+            for (String key : keys) {
+                // Using {@String#format()} since proguard cannot strip string concatenation
+                Log.e("CM_DD", String.format("[%s=%s]", key, extras.get(key)));
+            }
         }
 
         SharedPreferences preferences = context.getSharedPreferences("codemojo", Context.MODE_PRIVATE);
