@@ -305,6 +305,12 @@ public class AvailableRewardsActivity extends AppCompatActivity implements Adapt
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        setResult(Activity.RESULT_CANCELED, new Intent());
+        super.onBackPressed();
+    }
+
     public class RewardsFlowReceiver extends BroadcastReceiver {
 
         @Override
