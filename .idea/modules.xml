@@ -5,6 +5,7 @@
       <module fileurl="file://$PROJECT_DIR$/Codemojo SDK.iml" filepath="$PROJECT_DIR$/Codemojo SDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/sample/sample.iml" filepath="$PROJECT_DIR$/sample/sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/sdk/sdk.iml" filepath="$PROJECT_DIR$/sdk/sdk.iml" />
+      <module fileurl="file://$PROJECT_DIR$/startkit-android-sdk.iml" filepath="$PROJECT_DIR$/startkit-android-sdk.iml" />
     </modules>
   </component>
 </project>

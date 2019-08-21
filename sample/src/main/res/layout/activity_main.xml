@@ -55,5 +55,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <TextView
+        android:id="@+id/lblAchievementHistory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Achivement History"
+        android:textAlignment="center" />
+
 
 </LinearLayout>

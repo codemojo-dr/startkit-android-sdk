@@ -36,7 +36,8 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
         AppContext.getCodemojoClient().setGamificationEarnedEventListener(this);
         AppContext.getCodemojoClient().getGamificationService().setErrorHandler(this);
 
-        onActivityResult(0,0,null);
+        AppContext.getCodemojoClient().getLoyaltyService().addLoyaltyPoints();
+        getWalletBalance();
 
         getSupportActionBar().setTitle("Gamification Demo");
         findViewById(R.id.btnUno).setOnClickListener(this);
@@ -46,32 +47,31 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
         findViewById(R.id.history).setOnClickListener(this);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == 0){
-            AppContext.getCodemojoClient().getWalletService().getWalletBalance(new ResponseAvailable() {
-                @Override
-                public void available(Object balance) {
-                    try {
-                        ((TextView) findViewById(R.id.lblWalletBalance)).setText(
-                                (int) ((WalletBalance) balance).getSlot3().getRawPoints() + " pts = $"
-                        + ((WalletBalance) balance).getSlot3().getConvertedPoints());
-                    } catch (Exception ignored) {
-                    }
+    private void getWalletBalance() {
+        AppContext.getCodemojoClient().getWalletService().getWalletBalance(new ResponseAvailable() {
+            @Override
+            public void available(Object balance) {
+                try {
+                    ((TextView) findViewById(R.id.lblWalletBalance)).setText(
+                            (int) ((WalletBalance) balance).getSlot3().getRawPoints() + " pts = $"
+                                    + ((WalletBalance) balance).getSlot3().getConvertedPoints());
+                } catch (Exception ignored) {
+                    Log.e("gam_err", ignored.getMessage());
                 }
-            });
-        }
-        super.onActivityResult(requestCode, resultCode, data);
+            }
+        });
     }
 
     @Override
     public void newTierUpgrade(String tierName) {
         Log.e("gam_tier", tierName);
+        Toast.makeText(this, "You have been upgraded to new Tier: \"" + tierName + "\"!", Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void newBadgeUnlocked(int totalPoints, String badgeName) {
         Log.e("gam_badge", badgeName);
+        Toast.makeText(this, "New Badge \"" + badgeName + "\" unlocked for you!", Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -122,6 +122,8 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
             }
         });
 
+        getWalletBalance();
+
         /*
          * Alternatively you can do any other stuff
 
@@ -136,6 +138,13 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
 
     @Override
     public void updatedAchievemenstAvailable(Map<String, GamificationAchievement> achievements) {
+        getWalletBalance();
+        StringBuilder history = new StringBuilder();
+        for (String achievement :
+                achievements.keySet()) {
+            history.append(achievement.toUpperCase()).append(":").append(" ").append(achievements.get(achievement).getTotal()).append("\n");
+        }
+        ((TextView) findViewById(R.id.lblAchievementHistory)).setText(history.toString());
         Log.e("gam_new", "something");
     }
 
@@ -158,6 +167,7 @@ public class GamificationActivity extends AppCompatActivity implements LoyaltyEv
                 AppContext.getCodemojoClient().launchGamificationTransactionScreen();
                 break;
         }
+        getWalletBalance();
     }
 
     @Override
